@@ -15,7 +15,8 @@ import (
 
 // ServerList contains the list of servers available to the SDK
 var ServerList = []string{
-	"https://file.sls.epilot.io",
+	"https://webhooks.sls.epilot.io",
+	"https://webhooks.sls.epilot.io",
 }
 
 // HTTPClient provides an interface for suplying the SDK with a custom HTTP client
@@ -41,6 +42,9 @@ func Float32(f float32) *float32 { return &f }
 // Float64 provides a helper function to return a pointer to a float64
 func Float64(f float64) *float64 { return &f }
 
+// Pointer provides a helper function to return a pointer to a type
+func Pointer[T any](v T) *T { return &v }
+
 type sdkConfiguration struct {
 	Client            HTTPClient
 	Security          func(context.Context) (interface{}, error)
@@ -64,18 +68,13 @@ func (c *sdkConfiguration) GetServerDetails() (string, map[string]string) {
 	return ServerList[c.ServerIndex], nil
 }
 
-// SDK - File API: Upload and manage epilot Files
+// SDK - Webhooks: Service for configuring webhooks on different events
 type SDK struct {
-	// Deprecated APIs
-	Deprecated *Deprecated
-	// Upload and Manage File Entities
-	File *File
-	// Create and Manage Public Links for Files
-	PublicLinks *PublicLinks
-	// Preview APIs
-	Preview *Preview
-	// Session API for cookie authentication
-	Session *Session
+	// Configure and trigger webhooks
+	Webhooks *Webhooks
+	Events   *Events
+	Event    *Event
+	Trigger  *Trigger
 
 	sdkConfiguration sdkConfiguration
 }
@@ -152,10 +151,10 @@ func New(opts ...SDKOption) *SDK {
 	sdk := &SDK{
 		sdkConfiguration: sdkConfiguration{
 			Language:          "go",
-			OpenAPIDocVersion: "0.2.0",
+			OpenAPIDocVersion: "1.0.0",
 			SDKVersion:        "0.0.1",
-			GenVersion:        "2.396.0",
-			UserAgent:         "speakeasy-sdk/go 0.0.1 2.396.0 0.2.0 github.com/epilot-dev/terraform-provider-epilot-webhook/internal/sdk",
+			GenVersion:        "2.422.6",
+			UserAgent:         "speakeasy-sdk/go 0.0.1 2.422.6 1.0.0 github.com/epilot-dev/terraform-provider-epilot-webhook/internal/sdk",
 			Hooks:             hooks.New(),
 		},
 	}
@@ -175,15 +174,13 @@ func New(opts ...SDKOption) *SDK {
 		sdk.sdkConfiguration.ServerURL = serverURL
 	}
 
-	sdk.Deprecated = newDeprecated(sdk.sdkConfiguration)
+	sdk.Webhooks = newWebhooks(sdk.sdkConfiguration)
 
-	sdk.File = newFile(sdk.sdkConfiguration)
+	sdk.Events = newEvents(sdk.sdkConfiguration)
 
-	sdk.PublicLinks = newPublicLinks(sdk.sdkConfiguration)
+	sdk.Event = newEvent(sdk.sdkConfiguration)
 
-	sdk.Preview = newPreview(sdk.sdkConfiguration)
-
-	sdk.Session = newSession(sdk.sdkConfiguration)
+	sdk.Trigger = newTrigger(sdk.sdkConfiguration)
 
 	return sdk
 }

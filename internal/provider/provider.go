@@ -14,39 +14,34 @@ import (
 	"net/http"
 )
 
-var _ provider.Provider = &EpilotFileProvider{}
+var _ provider.Provider = &EpilotWebhookProvider{}
 
-type EpilotFileProvider struct {
+type EpilotWebhookProvider struct {
 	// version is set to the provider version on release, "dev" when the
 	// provider is built and ran locally, and "test" when running acceptance
 	// testing.
 	version string
 }
 
-// EpilotFileProviderModel describes the provider data model.
-type EpilotFileProviderModel struct {
+// EpilotWebhookProviderModel describes the provider data model.
+type EpilotWebhookProviderModel struct {
 	ServerURL  types.String `tfsdk:"server_url"`
-	CookieAuth types.String `tfsdk:"cookie_auth"`
 	EpilotAuth types.String `tfsdk:"epilot_auth"`
 }
 
-func (p *EpilotFileProvider) Metadata(ctx context.Context, req provider.MetadataRequest, resp *provider.MetadataResponse) {
+func (p *EpilotWebhookProvider) Metadata(ctx context.Context, req provider.MetadataRequest, resp *provider.MetadataResponse) {
 	resp.TypeName = "epilot-webhook"
 	resp.Version = p.version
 }
 
-func (p *EpilotFileProvider) Schema(ctx context.Context, req provider.SchemaRequest, resp *provider.SchemaResponse) {
+func (p *EpilotWebhookProvider) Schema(ctx context.Context, req provider.SchemaRequest, resp *provider.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: `File API: Upload and manage epilot Files`,
+		Description: `Webhooks: Service for configuring webhooks on different events`,
 		Attributes: map[string]schema.Attribute{
 			"server_url": schema.StringAttribute{
-				MarkdownDescription: "Server URL (defaults to https://file.sls.epilot.io)",
+				MarkdownDescription: "Server URL (defaults to https://webhooks.sls.epilot.io)",
 				Optional:            true,
 				Required:            false,
-			},
-			"cookie_auth": schema.StringAttribute{
-				Sensitive: true,
-				Optional:  true,
 			},
 			"epilot_auth": schema.StringAttribute{
 				Sensitive: true,
@@ -56,8 +51,8 @@ func (p *EpilotFileProvider) Schema(ctx context.Context, req provider.SchemaRequ
 	}
 }
 
-func (p *EpilotFileProvider) Configure(ctx context.Context, req provider.ConfigureRequest, resp *provider.ConfigureResponse) {
-	var data EpilotFileProviderModel
+func (p *EpilotWebhookProvider) Configure(ctx context.Context, req provider.ConfigureRequest, resp *provider.ConfigureResponse) {
+	var data EpilotWebhookProviderModel
 
 	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
 
@@ -68,15 +63,9 @@ func (p *EpilotFileProvider) Configure(ctx context.Context, req provider.Configu
 	ServerURL := data.ServerURL.ValueString()
 
 	if ServerURL == "" {
-		ServerURL = "https://file.sls.epilot.io"
+		ServerURL = "https://webhooks.sls.epilot.io"
 	}
 
-	cookieAuth := new(string)
-	if !data.CookieAuth.IsUnknown() && !data.CookieAuth.IsNull() {
-		*cookieAuth = data.CookieAuth.ValueString()
-	} else {
-		cookieAuth = nil
-	}
 	epilotAuth := new(string)
 	if !data.EpilotAuth.IsUnknown() && !data.EpilotAuth.IsNull() {
 		*epilotAuth = data.EpilotAuth.ValueString()
@@ -84,7 +73,6 @@ func (p *EpilotFileProvider) Configure(ctx context.Context, req provider.Configu
 		epilotAuth = nil
 	}
 	security := shared.Security{
-		CookieAuth: cookieAuth,
 		EpilotAuth: epilotAuth,
 	}
 
@@ -99,21 +87,21 @@ func (p *EpilotFileProvider) Configure(ctx context.Context, req provider.Configu
 	resp.ResourceData = client
 }
 
-func (p *EpilotFileProvider) Resources(ctx context.Context) []func() resource.Resource {
+func (p *EpilotWebhookProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
-		NewFileResource,
+		NewWebhookResource,
 	}
 }
 
-func (p *EpilotFileProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
+func (p *EpilotWebhookProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
-		NewFileDataSource,
+		NewWebhookDataSource,
 	}
 }
 
 func New(version string) func() provider.Provider {
 	return func() provider.Provider {
-		return &EpilotFileProvider{
+		return &EpilotWebhookProvider{
 			version: version,
 		}
 	}

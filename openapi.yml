@@ -1,1055 +1,971 @@
-openapi: 3.0.3
+openapi: 3.0.0
+
 info:
-  title: File API
-  version: 0.2.0
-  description: Upload and manage epilot Files
+  title: Webhooks
+  version: 1.0.0
+  description: |
+    Service for configuring webhooks on different events
+
 tags:
-  - name: File
-    description: Upload and Manage File Entities
-  - name: Preview
-    description: Preview APIs
-  - name: Public Links
-    description: Create and Manage Public Links for Files
-  - name: Session
-    description: Session API for cookie authentication
-  - name: Deprecated
-    description: Deprecated APIs
-security:
-  - EpilotAuth: []
-  - CookieAuth: []
-servers:
-  - url: https://file.sls.epilot.io
+  - name: webhooks
+    description: Configure and trigger webhooks
+
 paths:
-  /v2/files/upload:
-    post:
-      operationId: uploadFileV2
-      summary: uploadFileV2
-      description: |
-        Create pre-signed S3 URL to upload a file to keep temporarily (one week).
-
-        Use the saveFileV2 operation to store file file permanently.
-      tags:
-        - File
-      parameters:
-        - name: file_entity_id
-          in: query
-          description: |
-            Use this parameter when uploading a file directly to an existing file entity.
-
-            Note: still requires calling saveFileV2 to save the file permanently.
-          schema:
-            $ref: "#/components/schemas/FileEntityId"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/UploadFilePayload"
-            examples:
-              Upload an image file:
-                description: Upload an image file
-                value: { "filename": "image.png", "mime_type": "image/png" }
-              Upload a document:
-                description: Upload an image file
-                value:
-                  { "filename": "document.pdf", "mime_type": "application/pdf" }
-      responses:
-        201:
-          description: Pre-signed URL for POST / PUT upload
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/FileUpload"
-  /v2/files:
-    post:
-      operationId: saveFileV2
-      summary: saveFileV2
-      description: |
-        Saves a permanent file entity. Updates an existing file entity when `_id` is passed.
-
-        Saves metadata to file entity and stores a version when `s3ref` or `source_url` is passed.
-      tags:
-        - File
-      parameters:
-        - $ref: "#/components/parameters/StrictQueryParam"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/SaveFilePayloadV2"
-            examples:
-              New file from s3ref:
-                description: Standard epilot file entity with S3 Ref
-                value:
-                  {
-                    "type": "document",
-                    "filename": "document.pdf",
-                    "_tags": ["string"],
-                    "access_control": "private",
-                    "s3ref":
-                      {
-                        "bucket": "epilot-prod-user-content",
-                        "key": "123/4d689aeb-1497-4410-a9fe-b36ca9ac4389/document.pdf",
-                      },
-                  }
-              Update existing file with relations:
-                description: Update existing file entity with _id
-                value:
-                  {
-                    "_id": "ef7d985c-2385-44f4-9c71-ae06a52264f8",
-                    "filename": "document.pdf",
-                    "access_control": "private",
-                    "custom_download_url": "https://some-api-url.com/download?file_id=123",
-                    "shared_with_end_customer": true,
-                    "relations":
-                      [
-                        {
-                          "entity_id": "77a1e0cc-7b92-4d41-8cce-eefd317ec004",
-                          "_schema": "contact",
-                        },
-                      ],
-                  }
-              New file from source_url:
-                description: New epilot file entity from a source_url
-                value:
-                  {
-                    "type": "document",
-                    "filename": "document.pdf",
-                    "_tags": ["string"],
-                    "access_control": "private",
-                    "source_url": "https://docs.epilot.io/document.pdf",
-                  }
-              File with custom download URL (external):
-                description: Custom file entity with custom download url
-                value:
-                  {
-                    "type": "document",
-                    "filename": "document.pdf",
-                    "_tags": ["string"],
-                    "access_control": "private",
-                    "custom_download_url": "https://some-api-url.com/download?file_id=123",
-                    "shared_with_end_customer": true,
-                  }
-      responses:
-        200:
-          description: Created File Entity
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/FileEntity"
-  /v1/files/upload:
-    post:
-      operationId: uploadFile
-      summary: uploadFile
-      deprecated: true
-      description: |
-        Create pre-signed S3 URL to upload a file to keep temporarily (one week).
-
-        Use the saveFile operation to store file file permanently.
-      tags:
-        - Deprecated
-      parameters:
-        - name: file_entity_id
-          in: query
-          description: file entity id
-          schema:
-            $ref: "#/components/schemas/FileEntityId"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/UploadFilePayload"
-      responses:
-        201:
-          description: Pre-signed URL for POST / PUT upload
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  s3ref:
-                    allOf:
-                      - $ref: "#/components/schemas/S3Ref"
-                      - example:
-                          bucket: epilot-prod-user-content
-                          key: 123/temp/4d689aeb-1497-4410-a9fe-b36ca9ac4389/document.pdf
-                  upload_url:
-                    type: string
-                    format: url
-                    example: https://epilot-prod-user-content.s3.eu-central-1.amazonaws.com/123/temp/4d689aeb-1497-4410-a9fe-b36ca9ac4389/document.pdf?AWSParams=123
-                  public_url:
-                    description: Returned only if file is permanent i.e. file_entity_id is passed
-                    type: string
-                    format: url
-                    example: https://epilot-prod-user-content.s3.eu-central-1.amazonaws.com/123/4d689aeb-1497-4410-a9fe-b36ca9ac4389/document.pdf
-  /v1/files:
-    post:
-      operationId: saveFile
-      summary: saveFile
-      deprecated: true
-      description: |
-        Create / Update a permanent File entity
-
-        Makes file object permanent
-
-        Saves metadata to file entity
-
-      tags:
-        - Deprecated
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/SaveFilePayload"
-      responses:
-        201:
-          description: Created File Entity
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/FileEntity"
-  /v2/files/{id}:
+  /v1/webhooks/configured-events:
     get:
-      operationId: getFile
-      summary: getFile
-      description: Get a file entity by id
+      operationId: getConfiguredEvents
+      summary: getConfiguredEvents
+      description: Retrieve events that can trigger webhooks
       tags:
-        - File
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            $ref: "#/components/schemas/FileEntityId"
-        - name: source_url
-          in: query
-          schema:
-            type: boolean
-            default: false
-            description: Generate a source_url for the file entity, if it doesn't have one
-        - $ref: "#/components/parameters/StrictQueryParam"
+        - webhooks
       responses:
         200:
-          description: File Entity
+          description: Success - configured events loaded with success. Empty array if no events have been configured.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/FileEntity"
-    delete:
-      operationId: deleteFile
-      summary: deleteFile
-      description: Delete a file entity by id
-      tags:
-        - File
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            $ref: "#/components/schemas/FileEntityId"
-        - $ref: "#/components/parameters/StrictQueryParam"
-      responses:
-        200:
-          description: The deleted file
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/FileEntity"
-  /v1/files/{id}/download:
+                $ref: "#/components/schemas/EventConfigResp"
+  # Results
+  /v1/webhooks/configs:
     get:
-      operationId: downloadFile
-      summary: downloadFile
-      description: Generate pre-signed download S3 url for a file
+      operationId: getConfigs
+      summary: getConfigs
+      description: Search Webhook Client Configs
       tags:
-        - File
+        - webhooks
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            $ref: "#/components/schemas/FileEntityId"
-        - name: version
-          in: query
-          description: index of file version
-          schema:
-            type: integer
-            default: 0
-        - name: attachment
-          in: query
-          description: Controls the Content-Disposition header to control browser behaviour. Set to true to trigger download.
-          schema:
-            type: boolean
-            default: true
-      responses:
-        200:
-          description: Generated thumbnail image
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  download_url:
-                    type: string
-                    format: uri
-                    example: https://epilot-prod-user-content.s3.eu-central-1.amazonaws.com/123/temp/4d689aeb-1497-4410-a9fe-b36ca9ac4389/document.pdf?AWSParams=123
-  /v1/files:downloadS3:
-    post:
-      operationId: downloadS3File
-      summary: downloadS3File
-      description: Generate pre-signed download S3 url for a file
-      tags:
-        - File
-      parameters:
-        - name: s3_key
-          in: query
-          required: true
+        - in: query
+          name: eventName
           schema:
             type: string
-        - name: s3_bucket
-          in: query
-          required: true
-          schema:
-            type: string
-        - name: attachment
-          in: query
-          description: Controls the Content-Disposition header to control browser behaviour. Set to true to trigger download.
-          schema:
-            type: boolean
-            default: true
+          required: false
+          description: Filter configurations by event Name
+          example: customer_request_created
       responses:
         200:
-          description: Generated thumbnail image
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  download_url:
-                    type: string
-                    format: uri
-                    example: https://epilot-prod-user-content.s3.eu-central-1.amazonaws.com/123/temp/4d689aeb-1497-4410-a9fe-b36ca9ac4389/document.pdf?AWSParams=123
-  /v1/files:downloadFiles:
-    post:
-      operationId: downloadFiles
-      summary: downloadFiles
-      description: Bulk generate pre-signed download S3 urls for multiple files
-      tags:
-        - File
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/DownloadFilesPayload"
-      responses:
-        200:
-          description: Generated download urls
+          description: Success - configs loaded with success. Empty array if org has configs.
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  type: object
-                  properties:
-                    download_url:
-                      type: string
-                      format: uri
-                      example: https://epilot-prod-user-content.s3.eu-central-1.amazonaws.com/123/temp/4d689aeb-1497-4410-a9fe-b36ca9ac4389/document.pdf?AWSParams=123
-                    file_entity_id:
-                      type: string
-                      format: uuid
-  /v1/files/{id}/preview:
-    get:
-      operationId: previewFile
-      summary: previewFile
-      description: Generate thumbnail preview for a file entity
-      tags:
-        - Preview
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            $ref: "#/components/schemas/FileEntityId"
-        - name: version
-          in: query
-          description: index of file version
-          schema:
-            type: integer
-            default: 0
-        - name: w
-          in: query
-          description: width
-          schema:
-            type: integer
-        - name: h
-          in: query
-          description: height
-          schema:
-            type: integer
-      responses:
-        200:
-          description: Generated thumbnail image
+                  $ref: "#/components/schemas/WebhookConfig"
+        500:
+          description: Other errors
           content:
-            image/png: {}
-            image/jpeg: {}
-  /v1/files:previewS3:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResp"
     post:
-      operationId: previewS3File
-      summary: previewS3File
-      description: Generate thumbnail preview from an s3 reference for a file entity
+      operationId: createConfig
+      summary: createConfig
+      description: Create Webhook Client Config
       tags:
-        - Preview
-      parameters:
-        - name: w
-          in: query
-          description: width
-          schema:
-            type: integer
-        - name: h
-          in: query
-          description: height
-          schema:
-            type: integer
+        - webhooks
       requestBody:
+        description: Webhook config payload
+        required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/S3Ref"
-      responses:
-        200:
-          description: Generated thumbnail image
-          content:
-            image/png: {}
-            image/jpeg: {}
-    get:
-      operationId: previewS3FileGet
-      summary: previewS3FileGet
-      description: Get thumbnail preview from an s3 reference for a file entity
-      tags:
-        - Preview
-      parameters:
-        - name: key
-          in: query
-          description: s3 key
-          required: true
-          schema:
-            type: string
-        - name: bucket
-          in: query
-          description: s3 bucket
-          required: true
-          schema:
-            type: string
-        - name: w
-          in: query
-          description: width
-          schema:
-            type: integer
-        - name: h
-          in: query
-          description: height
-          schema:
-            type: integer
-      responses:
-        200:
-          description: Generated thumbnail image
-          content:
-            image/png: {}
-            image/jpeg: {}
-  /v1/files/public/{id}/preview:
-    get:
-      operationId: previewPublicFile
-      summary: previewPublicFile
-      description: Generate thumbnail preview for a public file entity
-      security: []
-      tags:
-        - Preview
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            $ref: "#/components/schemas/FileEntityId"
-        - name: version
-          in: query
-          description: index of file version
-          schema:
-            type: integer
-            default: 0
-        - name: w
-          in: query
-          description: width
-          schema:
-            type: integer
-        - name: h
-          in: query
-          description: height
-          schema:
-            type: integer
-        - name: org_id
-          in: query
-          description: Org id
-          schema:
-            type: string
-      responses:
-        200:
-          description: Generated thumbnail image for a public file
-          content:
-            image/png: {}
-            image/jpeg: {}
-  /v1/files/session:
-    get:
-      operationId: getSession
-      summary: getSession
-      description: |
-        Start a browser session by setting passed Authorization token in a server side cookie.
-
-        Allows using preview urls directly in img src for private files using cookie authentication.
-      tags:
-        - Session
-      responses:
-        200:
-          description: Session started successfully
-    delete:
-      operationId: deleteSession
-      summary: deleteSession
-      description: End browser session by deleting token cookie
-      tags:
-        - Session
-      responses:
-        200:
-          description: Session deleted successfully
-  /v1/files/{id}/public/links:
-    post:
-      operationId: generatePublicLink
-      summary: generatePublicLink
-      description: |
-        Generates a public link to access a private file
-      tags:
-        - Public Links
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            $ref: "#/components/schemas/FileEntityId"
+              $ref: "#/components/schemas/WebhookConfig"
       responses:
         201:
-          description: "Returns the public link which can be used to access the file later"
+          description: Success - if the config is created successfully
           content:
             application/json:
               schema:
-                type: string
-                example: "https://file.sls.epilot.io/v1/files/public/links/3ef5c6d9-818d-45e6-8efb-b1de59079a1c/invoice-2023-12.pdf"
+                $ref: "#/components/schemas/WebhookConfig"
+
+        400:
+          description: Validation Errors
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResp"
+        401:
+          description: Authentication Errors
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResp"
+        500:
+          description: Other errors
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResp"
+  /v1/webhooks/configs/{configId}:
     get:
-      operationId: listPublicLinksForFile
-      summary: listPublicLinksForFile
-      description: "Not yet implemented; This API would fetch all the public links that are previously generated for a file"
-      x-not-implemented: true
+      operationId: getConfig
+      summary: getConfig
+      description: Get webhook config by id
+      tags:
+        - webhooks
       parameters:
-        - name: id
-          in: path
-          required: true
+        - in: path
+          name: configId
           schema:
             type: string
-            description: ID of the file entity
-            example: "13d22918-36bd-4227-9ad4-2cb978788c8d"
-      tags:
-        - Public Links
+          required: true
+          description: Short uuid to identify the webhook configuration.
+          example: 7hj28aasgag2gha2
       responses:
         200:
-          description: "Public links of a file retrieved successfully"
+          description: Success - if the config is updated successfully
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  results:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/PublicLink"
-  /v1/files/public/links/{id}/{filename}:
-    get:
-      operationId: accessPublicLink
-      summary: accessPublicLink
-      security: []
+                $ref: "#/components/schemas/WebhookConfig"
+        404:
+          description: No configuration found for this id
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResp"
+        500:
+          description: Other errors
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResp"
+    put:
+      operationId: updateConfig
+      summary: updateConfig
+      description: Update Webhook Client Config
       tags:
-        - Public Links
-      description: "Redirects to a accessible signed url for the respective file associated to the public link"
+        - webhooks
       parameters:
-        - name: id
-          in: path
-          required: true
+        - in: path
+          name: configId
           schema:
             type: string
-            description: "Id of the publicly generated link"
-            example: "13d22918-36bd-4227-9ad4-2cb978788c8d"
-        - name: filename
-          in: path
           required: true
-          schema:
-            type: string
-            description: "Name of the file"
-            example: "invoice-2023-12.pdf"
-
+          description: Short uuid (length 6) to identify the webhook configuration.
+          example: 7hj28a
+      requestBody:
+        description: Webhook config payload
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WebhookConfig"
       responses:
-        302:
-          description: "Redirect to signed URL where the caller can access the file"
-  /v1/files/public/links/{id}:
+        200:
+          description: Success - if the config is updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WebhookConfig"
+        400:
+          description: Validation Errors
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResp"
+        401:
+          description: Authentication Errors
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResp"
+        500:
+          description: Other errors
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResp"
     delete:
-      operationId: revokePublicLink
-      summary: revokePublicLink
-      description: "Not yet implemented; This operation would revoke a given public link by ID"
-      x-not-implemented: true
+      operationId: deleteConfig
+      summary: deleteConfig
+      description: Delete Webhook Client Config
+      tags:
+        - webhooks
       parameters:
-        - name: id
-          in: path
-          required: true
+        - in: path
+          name: configId
           schema:
             type: string
-            description: "Id of the publicly generated link"
-            example: "13d22918-36bd-4227-9ad4-2cb978788c8d"
-      tags:
-        - Public Links
+          required: true
+          description: Id of the config to de deleted.
+          example: CustomerRequest
       responses:
         204:
-          description: "Revokes a public link successfully."
+          description: Success - if the config is deleted successfully
+        401:
+          description: Failed to authenticate
           content:
             application/json:
               schema:
-                type: string
-                example: "https://file.sls.epilot.io/v1/files/public/links/3ef5c6d9-818d-45e6-8efb-b1de59079a1c"
-  /v1/files/download:verify:
-    post:
-      operationId: verifyCustomDownloadUrl
-      summary: verifyCustomDownloadUrl
-      description: Verify a pre-signed custom download url for a file
+                $ref: "#/components/schemas/ErrorResp"
+        404:
+          description: No config found
+  /v1/webhooks/configs/{configId}/failures:
+    get:
+      operationId: getFailuresForConfig
+      deprecated: true
+      summary: getFailuresForConfig
+      description: Get failed deliveries for a given config id
       tags:
-        - File
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/VerifyCustomDownloadUrlPayload"
+        - webhooks
+      parameters:
+        - in: path
+          name: configId
+          schema:
+            type: string
+          required: true
+          description: Short uuid to identify the webhook configuration.
+          example: 7hj28aasgag2gha2
+        - in: query
+          name: lastLoadedEventId
+          schema:
+            type: string
+          required: false
+          description: Optional Key. To be provided when loading paginated data. It is always returned initially by this API, if pagination is needed.
+          example: 1f143bd2-f816-4d7d-b33d-056db6e1ef7b
+        - in: query
+          name: lastLoadedTimestamp
+          schema:
+            type: string
+          required: false
+
       responses:
         200:
-          description: Download Url matches signature and has not expired
+          description: Success
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  valid:
-                    type: boolean
-
-  /v1/files/public/upload:
-    post:
-      operationId: uploadFilePublic
-      summary: uploadFilePublic
-      security: []
-      description: |
-        Create pre-signed S3 URL to upload a file to keep temporarily (one week).
-
-        Use the saveFileV2 operation to store file file permanently.
+                $ref: "#/components/schemas/FailuresResp"
+        404:
+          description: No configuration found for this id
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResp"
+        500:
+          description: Other errors
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResp"
+                
+  /v1/webhooks/failures:
+    get:
+      deprecated: true
+      operationId: getFailures
+      summary: getFailures
+      description: Get saved failures from the webhooks DB, in a paginated way
       tags:
-        - File
+        - webhooks
+      parameters:
+        - in: query
+          name: lastLoadedEventId
+          schema:
+            type: string
+          required: false
+          description: Optional Key. To be provided when loading paginated data. It is always returned initially by this API, is pagination is needed.
+          example: 1f143bd2-f816-4d7d-b33d-056db6e1ef7b
+        - in: query
+          name: lastLoadedTimestamp
+          schema:
+            type: string
+          required: false
+          description: Optional Key. To be provided when loading paginated data. It is always returned initially by this API, is pagination is needed.
+          example: "2021:05:06T12:00:26.000Z"
+      responses:
+        200:
+          description: Success - if the API call returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailuresResp"
+        400:
+          description: Validation Errors
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResp"
+        401:
+          description: Authentication Errors
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResp"
+        500:
+          description: Other errors
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResp"
+  /v1/webhooks/failures/resend:
+    post:
+      deprecated: true
+      operationId: resendFailure
+      summary: resendFailure
+      description: Resend payload for one failure
+      tags:
+        - webhooks
       requestBody:
+        description: Resend payload
+        required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UploadFilePayload"
-            examples:
-              Upload an image file:
-                description: Upload an image file
-                value: { "filename": "image.png", "mime_type": "image/png" }
-              Upload a document:
-                description: Upload an image file
-                value:
-                  { "filename": "document.pdf", "mime_type": "application/pdf" }
+              $ref: "#/components/schemas/FailureEntry"
       responses:
-        201:
-          description: Pre-signed URL for POST / PUT upload
+        204:
+          description: Success - Payload has been resend
+        401:
+          description: Authentication Errors
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResp"
+        500:
+          description: Other errors
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResp"
+  /v1/webhooks/configs/{configId}/trigger:
+    post:
+      operationId: triggerWebhook
+      summary: triggers a webhook event either async or sync
+      description: Trigger a webhook
+      tags:
+        - webhooks
+        - trigger
+      parameters:
+        - in: query
+          name: sync
+          description: If set to true, the webhook will be triggered synchronously. Otherwise, it will be triggered asynchronously.
+          schema:
+            type: boolean
+        - in: path
+          name: configId
+          schema:
+            type: string
+          required: true
+          description: Short uuid to identify the webhook configuration.
+          example: 7hj28aasgag2gha2
+            
+      requestBody:
+        description: Webhook payload
+        required: true
+        content:
+          application/json:
+            schema: 
+             $ref: "#/components/schemas/ExecutionPayload"
+
+      responses:
+        200:
+          description: Success - if the webhook is triggered successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TriggerWebhookResp"
+        400:
+          description: Validation Errors
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResp"
+        500:
+          description: Other errors
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResp"
+  /v1/webhooks/configs/{configId}/events:
+    get:
+      operationId: getWehookEvents
+      summary: getWehookEvents
+      description: Get sent events for a given webhook config
+      tags:
+        - webhooks
+        - events
+      parameters:
+        - in: path
+          name: configId
+          schema:
+            type: string
+          required: true
+          description: Short uuid to identify the webhook configuration.
+          example: 7hj28aasgag2gha2
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum:
+            - succeeded
+            - failed
+            - in_progress
+          description: Get all events for a given webhook config id
+          example: succeeded
+        - in: query
+          name: cursor
+          schema:
+            type: string
+          required: false
+          description: Base64 encoded cursor to be used for pagination
+      responses:
+        200:
+          description: Success - list events
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  s3ref:
-                    allOf:
-                      - $ref: "#/components/schemas/S3Ref"
-                      - example:
-                          bucket: epilot-prod-user-content
-                          key: 123/temp/4d689aeb-1497-4410-a9fe-b36ca9ac4389/document.pdf
-                  upload_url:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/WebhookEvent"
+                  cursor:
                     type: string
-                    format: url
-                    example: https://epilot-prod-user-content.s3.eu-central-1.amazonaws.com/123/temp/4d689aeb-1497-4410-a9fe-b36ca9ac4389/document.pdf?AWSParams=123
+                    description: Cursor to be used for pagination
+        404:
+          description: No events found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResp"
+        500:
+          description: Other errors
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResp"
+  /v1/webhooks/configs/{configId}/events/{eventId}:
+    get:
+      operationId: getEventById
+      summary: getEventById
+      description: Get a webhook event by its id
+      tags:
+        - webhooks
+        - event
+      parameters:
+        - in: path
+          name: configId
+          schema:
+            type: string
+          required: true
+          description: Short uuid to identify the webhook configuration.
+          example: 7hj28aasgag2gha2
+        - in: path
+          name: eventId
+          schema:
+            type: string
+          required: true
+          description: Event id
+      responses:
+        200:
+          description: Success - event
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WebhookEvent"
+        404:
+          description: No events found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResp"
+        500:
+          description: Other errors
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResp"
 
+  /v1/webhooks/configs/{configId}/events/{eventId}/replay:
+    post:
+      operationId: replayEvent
+      summary: replayEvent
+      description: Replay a webhook event
+      tags:
+        - webhooks
+        - event
+      parameters:
+        - in: path
+          name: configId
+          schema:
+            type: string
+          required: true
+          description: Short uuid to identify the webhook configuration.
+          example: 7hj28aasgag2gha2
+        - in: path
+          name: eventId
+          schema:
+            type: string
+          required: true
+          description: Event id
+      responses:
+        204:
+          description: Success - replay event
+        404:
+          description: No events found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResp"
+        500:
+          description: Other errors
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResp"
 components:
+  schemas:
+    HttpMethod:
+      type: string
+      enum:
+        - GET
+        - POST
+        - PUT
+        - PATCH
+        - DELETE
+        - OPTIONS
+        - HEAD
+
+    AuthType:
+      type: string
+      enum:
+        - BASIC
+        - OAUTH_CLIENT_CREDENTIALS
+        - API_KEY
+
+    Filter:
+      type: object
+      properties:
+        keyToFilter:
+          type: string
+        supportedValues:
+          type: array
+          items:
+            type: string
+      required:
+        - keyToFilter
+        - supportedValues
+
+    Auth:
+      type: object
+      properties:
+        authType:
+          $ref: "#/components/schemas/AuthType"
+        basicAuthConfig:
+          $ref: "#/components/schemas/BasicAuthConfig"
+        oauthConfig:
+          $ref: "#/components/schemas/OAuthConfig"
+        apiKeyConfig:
+          $ref: "#/components/schemas/ApiKeyConfig"
+      required:
+        - authType
+
+    BasicAuthConfig:
+      type: object
+      description: To be sent only if authType is BASIC
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+      required:
+        - username
+
+    OAuthConfig:
+      type: object
+      description: To be sent only if authType is OAUTH_CLIENT_CREDENTIALS
+      properties:
+        clientId:
+          type: string
+        clientSecret:
+          type: string
+        endpoint:
+          type: string
+          description: Https Endpoint for authentication
+        httpMethod:
+          $ref: "#/components/schemas/HttpMethod"
+        customParameterList:
+          type: array
+          items:
+              $ref: "#/components/schemas/CustomOAuthParameter"
+      required:
+        - clientId
+        - endpoint
+        - httpMethod
+
+    ApiKeyConfig:
+      type: object
+      description: To be sent only if authType is API_KEY
+      properties:
+        keyName:
+          type: string
+        keyValue:
+          type: string
+      required:
+        - keyName
+
+    WebhookConfig:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        eventName:
+          type: string
+        url:
+          type: string
+        creationTime:
+          type: string
+          description: creation timestamp
+          example: "2021-04-27T12:01:13.000Z"
+        httpMethod:
+          $ref: "#/components/schemas/HttpMethod"
+        enabled:
+          type: boolean
+        auth:
+          $ref: "#/components/schemas/Auth"
+        filter:
+          $ref: "#/components/schemas/Filter"
+        payloadConfiguration:
+          $ref: "#/components/schemas/PayloadConfiguration"
+        enableStaticIP:
+          type: boolean
+        status:
+          type: string
+          enum:
+            - active
+            - inactive
+            - incomplete
+      required:
+        - name
+        - eventName
+
+      example:
+        eventName: CustomerRequest_Created
+        url: https://my-partner-service.api.com
+        httpMethod: POST
+        enabled: true
+        auth:
+          authType: BASIC
+          basicAuthConfig:
+            username: secretUsername
+            password: secret7825@!
+        filter:
+          keyToFilter: customer_request.productId
+          supportedValues:
+            - "2324245"
+            - "5253642"
+
+    EventConfigResp:
+      type: array
+      items:
+        $ref: '#/components/schemas/EventConfigEntry'
+      example:
+        - eventName: customer_request_created
+          eventLabel: Customer Request Created
+
+    EventConfigEntry:
+      type: object
+      properties:
+        eventName:
+          type: string
+          description: Name for identifying the event. Unique.
+        eventLabel:
+          type: string
+          description: Either a user friendly label, or the eventName itself.
+
+    FailureLastKey:
+      type: object
+      description: Key of last loaded item previously returned via paginated response
+      properties:
+        orgId:
+          type: string
+        eventId:
+          type: string
+        creationTimestamp:
+          type: string 
+        webhookConfigId:
+          type: string
+
+    FailuresResp:
+      type: object
+      description: Response for get errors request.
+      properties:
+        lastLoadedKey:
+          $ref: '#/components/schemas/FailureLastKey'
+        failures:
+            type: array
+            items:
+              $ref: '#/components/schemas/FailureEntry'
+      required:
+        - failures
+      example:
+        failures:
+          - eventName: customer_request_created,
+            eventId: 12e8726b-071b-4c42-9221-8caae0d14863
+            errorCode: '502'
+            webhookConfigId: kreauMGUr55nDoVviaaBLG
+            creationTimestamp: '2021-04-13T17:43:40.576Z'
+            orgId: '728'
+            errorPayload: Failed to store data
+            url: https://63b2de56be27.ngrok.io
+            payload:
+              metadata:
+                action: created
+                creation_timestamp: '2021-04-13T17:43:40.576Z'
+                event_name: customer_request_created
+                object: customer_request
+                organization_id: '728'
+                version: '1.0.0'
+              customer_request:
+                id: TEST
+                payment_details:
+                  account_owner_name: Test
+                  bank_name: Test Bank
+                  bic: BIC
+                  iban: IBAN
+                  payment_method: sepa
+                request_items:
+                  - id: TEST
+                    otherProp1: test1
+                    otherProp2: test2
+          - eventName: customer_request_created
+            eventId: fc51a730-9730-4b55-8aa1-dd6d66b7e3e2
+            errorCode: '404'
+            webhookConfigId: xrExypA8HBWEtK9AXfU2de
+            creationTimestamp: '2021-04-13T17:43:40.576Z'
+            orgId: '728'
+            errorPayload: Tunnel ef68038e3af9.ngrok.io not found
+            url: https://ef68038e3af9.ngrok.io
+            payload:
+              metadata:
+                action: created
+                creation_timestamp: '2021-04-13T17:43:40.576Z'
+                event_name: customer_request_created
+                object: customer_request
+                organization_id: '728'
+                version: '1.0.0'
+              customer_request:
+                id: TEST
+                payment_details:
+                  account_owner_name: Test
+                  bank_name: Test Bank
+                  bic: BIC
+                  iban: IBAN
+                  payment_method: sepa
+                request_items:
+                  - id: TEST
+                    otherProp1: test1
+                    otherProp2: true
+        lastLoadedKey:
+          orgId: 6122
+          eventId: fc51a730-9730-4b55-8aa1-dd6d66b7e3e2
+          creationTimestamp: "2022:01:01T00:00:00.000Z"
+
+    FailureEntry:
+      type: object
+      description: Failures stored in the database.
+      properties:
+          orgId:
+            type: string
+            description: The ID of the given organization
+          eventId:
+            type: string
+            description: ID of event. Unique
+          eventName:
+            type: string
+            description: Name for identifying the event. Unique.
+          creationTimestamp:
+            type: string
+            description: Time of event creation
+          payload:
+            type: object
+            description: Contains the metadata about the configured event
+          webhookConfigId:
+            type: string
+            description: The ID of the webhook configuration
+          errorCode:
+            type: string
+          errorPayload:
+            type: string
+            description: The error message encountered during webhook delivery
+          url:
+            type: string
+            description: destination url of configured webhook
+
+    ErrorResp:
+      type: object
+      properties:
+        message:
+          type: string
+
+    TriggerWebhookResp:
+      type: object
+      properties:
+        status_code:
+          type: string
+        message:
+          type: string
+        body:
+          type: object
+        code:
+          type: string
+        status:
+          type: string
+          enum:
+            - succeeded
+            - failed
+        start_date:
+          type: string
+        end_date:
+          type: string
+        event_id:
+          type: string
+
+    PayloadConfiguration:
+      type: object
+      description: Configuration for the webhook payload
+      properties:
+        hydrate_entity:
+          type: boolean
+        include_relations:
+          type: boolean
+        include_activity:
+          type: boolean 
+        include_changed_attributes:
+          type: boolean
+        custom_headers:
+          $ref: "#/components/schemas/CustomHeader"
+
+    CustomHeader:
+      type: object
+      description: Object representing custom headers as key-value pairs.
+      additionalProperties:
+        type: string
+        description: Header value
+  
+    CustomOAuthParameter:
+      type: object
+      description: Custom key/value pair of either type body, query or header
+      properties:
+        type:
+          type: string
+          enum:
+            - body
+            - query
+            - header
+        key:
+          type: string
+        value:
+          type: string 
+      required:
+        - type
+        - key
+        - value
+
+    Metadata:
+      type: object
+      description: Contains the metadata about the configured event
+      properties:
+        action:
+          type: string
+          description: Action that triggered the event
+          example: "Manual triggered by user with id 123456"
+        origin:
+          type: string
+          description: Origin of the event
+        creation_timestamp:
+          type: string
+          description: Time of event creation
+        webhook_id:
+          type: string
+          description: The ID of the webhook configuration
+        webhook_name:
+          type: string
+          description: The name of the webhook configuration
+        automation_name:
+          type: string
+          description: The name of the automation that triggered the event
+        organization_id:
+          type: string
+          description: The ID of the given organization
+        user_id:
+          type: string
+          description: The ID of the user for manual triggered events
+        correlation_id:
+          type: string
+          description: ID used to track the event
+      required:
+        - organization_id
+
+    ExecutionPayload:
+      type: object
+      description: Payload for triggering a webhook
+      properties:
+        metadata:
+          $ref: "#/components/schemas/Metadata"
+      required:
+        - metadata
+
+    WebhookEvent:
+      type: object
+      properties:
+        event_id:
+          type: string
+        org_id:
+          type: string
+        webhook_config_id:
+          type: string
+        url:
+          type: string
+        created_at:
+          type: string
+          example: "2021-04-27T12:01:13.000Z"
+        event_name:
+          type: string
+        http_response:
+          type: object
+          properties:
+            status_code:
+              type: integer
+            message:
+              type: string
+            body:
+              type: object
+            code:
+              type: string
+        metadata:
+          $ref: "#/components/schemas/Metadata"
+        status:
+          type: string
+          enum:
+            - succeeded
+            - failed
+            - in_progress
+        http_method:
+          type: string
+          enum:
+            - GET
+            - POST
+            - PUT
+        payload:
+          type: string
+          description: stringified payload of the webhook request
+
+      required:
+        - event_id
+        - webhook_config_id
+        - org_id
+
   securitySchemes:
     EpilotAuth:
       type: http
       scheme: bearer
       description: Authorization header with epilot OAuth2 bearer token
       bearerFormat: JWT
-    CookieAuth:
-      type: apiKey
-      in: cookie
-      name: token
-      description: Cookie with epilot OAuth2 token
-  schemas:
-    EntityId:
-      type: string
-      example: ef7d985c-2385-44f4-9c71-ae06a52264f8
-    EntitySlug:
-      description: URL-friendly identifier for the entity schema
-      type: string
-      example: contact
-    FileEntityId:
-      type: string
-      example: ef7d985c-2385-44f4-9c71-ae06a52264f8
-    FileAttributes:
-      type: object
-      properties:
-        _tags:
-          type: array
-          items:
-            type: string
-          example: ["tag1", "tag2"]
-        _purpose:
-          type: array
-          items:
-            type: string
-          example: ["8d396871-95a0-4c9d-bb4d-9eda9c35776c", "da7cdf9a-01be-40c9-a29c-9a8f9f0de6f8"]
-        filename:
-          type: string
-          example: document.pdf
-        type:
-          $ref: "#/components/schemas/FileType"
-        mime_type:
-          type: string
-          description: MIME type of the file
-          example: application/pdf
-        size_bytes:
-          type: integer
-          minimum: 0
-          description: File size in bytes
-          example: 1234
-          readOnly: true
-        readable_size:
-          type: string
-          example: 1.2 MB
-          description: Human readable file size
-          readOnly: true
-        access_control:
-          type: string
-          default: private
-          enum:
-            - private
-            - public-read
-        public_url:
-          description: Direct URL for file (public only if file access control is public-read)
-          type: string
-          format: url
-          example: https://epilot-prod-user-content.s3.eu-central-1.amazonaws.com/123/4d689aeb-1497-4410-a9fe-b36ca9ac4389/document.pdf
-          readOnly: true
-        custom_download_url:
-          $ref: "#/components/schemas/CustomDownloadUrl"
-    FileType:
-      type: string
-      enum:
-        - document
-        - document_template
-        - text
-        - image
-        - video
-        - audio
-        - spreadsheet
-        - presentation
-        - font
-        - archive
-        - application
-        - unknown
-    CustomDownloadUrl:
-      description: Custom external download url used for the file
-      type: string
-      format: uri
-      example: https://some-api-url.com/download?file_id=123
-    FileEntity:
-      allOf:
-        - type: object
-          properties:
-            _title:
-              type: string
-              example: document.pdf
-            _schema:
-              type: string
-              enum: ["file"]
-              readOnly: true
-            _org:
-              type: string
-              example: "123"
-              readOnly: true
-            _id:
-              $ref: "#/components/schemas/FileEntityId"
-        - $ref: "#/components/schemas/FileAttributes"
-        - type: object
-          properties:
-            source_url:
-              type: string
-              description: Source URL for the file. Included if the entity was created from source_url, or when ?source_url=true
-              example: https://productengineer-content.s3.eu-west-1.amazonaws.com/product-engineer-checklist.pdf
-            s3ref:
-              $ref: "#/components/schemas/S3Ref"
-              readOnly: true
-            versions:
-              type: array
-              items:
-                $ref: "#/components/schemas/FileItem"
-              readOnly: true
-            _updated_at:
-              type: string
-              format: date-time
-              readOnly: true
-            _created_at:
-              type: string
-              format: date-time
-              readOnly: true
-            _acl:
-              $ref: "#/components/schemas/BaseEntityAcl"
-            _owners:
-              type: array
-              readOnly: true
-              items:
-                $ref: "#/components/schemas/BaseEntityOwner"
-            __additional:
-              type: object
-              description: Additional fields that are not part of the schema
-              additionalProperties: true
-              nullable: true
-          required:
-            - _title
-            - _schema
-            - _org
-            - _id
-            - filename
-            - type
-            - access_control
-            - versions
-    CommonSaveFilePayload:
-      type: object
-      properties:
-        _id:
-          allOf:
-            - $ref: "#/components/schemas/FileEntityId"
-            - description: if passed, adds a new version to existing file entity
-        file_entity_id:
-          type: string
-          description: Deprecated, use _id instead
-          deprecated: true
-        relations:
-          type: array
-          description: List of entities to relate the file to
-          items:
-            $ref: "#/components/schemas/FileRelationItem"
-      additionalProperties: true
-    SaveS3FilePayload:
-      allOf:
-        - $ref: "#/components/schemas/CommonSaveFilePayload"
-        - $ref: "#/components/schemas/FileAttributes"
-        - type: object
-          properties:
-            s3ref:
-              $ref: "#/components/schemas/S3Ref"
-    SaveFileFromSourceURLPayload:
-      allOf:
-        - $ref: "#/components/schemas/CommonSaveFilePayload"
-        - $ref: "#/components/schemas/FileAttributes"
-        - type: object
-          properties:
-            source_url:
-              $ref: "#/components/schemas/CustomDownloadUrl"
-    SaveCustomFilePayload:
-      allOf:
-        - $ref: "#/components/schemas/CommonSaveFilePayload"
-        - $ref: "#/components/schemas/FileAttributes"
-        - type: object
-          properties:
-            custom_download_url:
-              $ref: "#/components/schemas/CustomDownloadUrl"
-    SaveFilePayload:
-      anyOf:
-        - $ref: "#/components/schemas/SaveS3FilePayload"
-        - $ref: "#/components/schemas/SaveFileFromSourceURLPayload"
-        - $ref: "#/components/schemas/SaveCustomFilePayload"
-    SaveFilePayloadV2:
-      anyOf:
-        - $ref: "#/components/schemas/SaveS3FilePayload"
-        - $ref: "#/components/schemas/SaveFileFromSourceURLPayload"
-        - $ref: "#/components/schemas/SaveCustomFilePayload"
-    UploadFilePayload:
-      type: object
-      properties:
-        filename:
-          type: string
-          example: document.pdf
-        mime_type:
-          description: MIME type of file
-          type: string
-          example: application/pdf
-          default: application/octet-stream
-        index_tag:
-          type: string
-          example: 2f6a377c8e78
-          maxLength: 64
-          description: Used to index the file at the storage layer, which helps when browsing for this file
-        metadata:
-          type: object
-          additionalProperties:
-            anyOf:
-              - type: string
-          example: { "color": "blue" }
-          description: Allows passing in custom metadata for the file, expects key-value pairs of string type
-      required:
-        - filename
-    FileUpload:
-      type: object
-      properties:
-        s3ref:
-          allOf:
-            - $ref: "#/components/schemas/S3Ref"
-            - example:
-                bucket: epilot-prod-user-content
-                key: 123/temp/4d689aeb-1497-4410-a9fe-b36ca9ac4389/document.pdf
-        upload_url:
-          type: string
-          format: url
-          example: https://epilot-prod-user-content.s3.eu-central-1.amazonaws.com/123/temp/4d689aeb-1497-4410-a9fe-b36ca9ac4389/document.pdf?AWSParams=123
-        public_url:
-          description: Returned only if file is permanent i.e. file_entity_id is passed
-          type: string
-          format: url
-          example: https://epilot-prod-user-content.s3.eu-central-1.amazonaws.com/123/4d689aeb-1497-4410-a9fe-b36ca9ac4389/document.pdf
-    DownloadFilesPayload:
-      type: array
-      items:
-        type: object
-        properties:
-          id:
-            $ref: "#/components/schemas/FileEntityId"
-          version:
-            type: integer
-            description: File version
-            example: 0
-        required:
-          - id
-    VerifyCustomDownloadUrlPayload:
-      type: object
-      properties:
-        custom_download_url:
-          description: Custom external download url with signature and expiration time
-          type: string
-          format: uri
-          example: https://some-api-url.com?file_id=123&expires_at=1699273500029&signature=abcdefg
-      required:
-        - custom_download_url
-    S3Reference:
-      type: object
-      properties:
-        bucket:
-          type: string
-          example: epilot-prod-user-content
-        key:
-          type: string
-          example: 123/4d689aeb-1497-4410-a9fe-b36ca9ac4389/document.pdf
-      required:
-        - bucket
-        - key
-    S3Ref:
-      $ref: "#/components/schemas/S3Reference"
-    FileItem:
-      type: object
-      properties:
-        s3ref:
-          $ref: "#/components/schemas/S3Ref"
-        filename:
-          type: string
-          example: document.pdf
-        size_bytes:
-          type: integer
-          example: 1234
-        readable_size:
-          type: string
-          example: 1.2 MB
-        mime_type:
-          type: string
-          example: image/jpeg
-    FileRelationItem:
-      type: object
-      properties:
-        entity_id:
-          $ref: "#/components/schemas/EntityId"
-        _schema:
-          $ref: "#/components/schemas/EntitySlug"
-        _tags:
-          type: array
-          items:
-            type: string
-      required:
-        - entity_id
-    PublicLink:
-      type: object
-      properties:
-        id:
-          type: string
-          description: "ID of the public link"
-          example: "3ef5c6d9-818d-45e6-8efb-b1de59079a1c"
-        link:
-          type: string
-          description: "Public link of the file"
-          example: "https://file.sls.epilot.io/v1/files/public/links/3ef5c6d9-818d-45e6-8efb-b1de59079a1c"
-        last_accessed_at:
-          type: string
-          description: "The most recent timestamp when the file was accessed"
-    BaseEntityOwner:
-      description: |
-        The user / organization owning this entity.
-
-        Note: Owner implicitly has access to the entity regardless of ACLs.
-      type: object
-      properties:
-        org_id:
-          type: string
-          example: "123"
-        user_id:
-          type: string
-          example: "123"
-      required:
-        - org_id
-    BaseEntityAcl:
-      type: object
-      description: Access control list (ACL) for an entity. Defines sharing access to external orgs or users.
-      properties:
-        view:
-          type: array
-          items:
-            type: string
-            example: org:456
-        edit:
-          type: array
-          items:
-            type: string
-            example: org:456
-        delete:
-          type: array
-          items:
-            type: string
-            example: org:456
-  parameters:
-    StrictQueryParam:
-      name: strict
-      in: query
-      required: false
-      description: When passed true, the response will contain only fields that match the schema, with non-matching fields included in `__additional`
-      schema:
-        type: boolean
-        default: false
+security:
+  - EpilotAuth: []
+servers:
+  - url: 'https://webhooks.sls.epilot.io'

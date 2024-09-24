@@ -3,15 +3,7 @@
 package shared
 
 type Security struct {
-	CookieAuth *string `security:"scheme,type=apiKey,subtype=cookie,name=token"`
 	EpilotAuth *string `security:"scheme,type=http,subtype=bearer,name=Authorization"`
-}
-
-func (o *Security) GetCookieAuth() *string {
-	if o == nil {
-		return nil
-	}
-	return o.CookieAuth
 }
 
 func (o *Security) GetEpilotAuth() *string {

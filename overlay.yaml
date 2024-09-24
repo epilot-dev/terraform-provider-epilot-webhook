@@ -1,10 +1,12 @@
 overlay: 1.0.0
 info:
-  title: Overlay epilot file to make a file resource
+  title: Overlay epilot webhook to make a webhook resource
   version: 0.0.1
 actions:
   - target: $
     update:
+      servers:
+        - url: https://webhooks.sls.epilot.io
       x-speakeasy-retries:
         strategy: backoff
         backoff:
@@ -15,24 +17,27 @@ actions:
         statusCodes:
           - 5XX
         retryConnectionErrors: true
-  - target: $["paths"]["/v2/files/{id}"]["get"]
+  - target: $["paths"]["/v1/webhooks/configs/{configId}"]["get"]["parameters"][0]
     update:
-      x-speakeasy-entity-operation: File#get
-  - target: $["paths"]["/v2/files/{id}"]["get"]["parameters"][1]
-    remove: yes
-  - target: $["paths"]["/v2/files/{id}"]["delete"]
+      x-speakeasy-match: id
+  - target: $["paths"]["/v1/webhooks/configs/{configId}"]["get"]
     update:
-      x-speakeasy-entity-operation: File#delete
-  - target: $["paths"]["/v2/files"]["post"]
+      x-speakeasy-entity-operation: Webhook#get
+  - target: $["paths"]["/v1/webhooks/configs/{configId}"]["delete"]
     update:
-      x-speakeasy-entity-operation: File#create,update
-  - target: $["components"]["schemas"]["FileEntity"]
+      x-speakeasy-entity-operation: Webhook#delete
+  - target: $["paths"]["/v1/webhooks/configs/{configId}"]["delete"]["parameters"][0]
     update:
-      x-speakeasy-entity: File
-  - target: $["components"]["schemas"]["FileEntity"]["allOf"][2]["required"]
-    remove: yes
-  - target: $["components"]["schemas"]["SaveFilePayloadV2"]
+      x-speakeasy-match: id
+  - target: $["paths"]["/v1/webhooks/configs/{configId}"]["put"]
     update:
-      $ref: "#/components/schemas/FileEntity"
-  - target: $["components"]["schemas"]["SaveFilePayloadV2"]["anyOf"]
-    remove: yes
+      x-speakeasy-entity-operation: Webhook#update
+  - target: $["paths"]["/v1/webhooks/configs/{configId}"]["put"]["parameters"][0]
+    update:
+      x-speakeasy-match: id
+  - target: $["paths"]["/v1/webhooks/configs"]["post"]
+    update:
+      x-speakeasy-entity-operation: Webhook#create
+  - target: $["components"]["schemas"]["WebhookConfig"]
+    update:
+      x-speakeasy-entity: Webhook
