@@ -3,12 +3,12 @@
 page_title: "epilot-webhook Provider"
 subcategory: ""
 description: |-
-  File API: Upload and manage epilot Files
+  Webhooks: Service for configuring webhooks on different events
 ---
 
 # epilot-webhook Provider
 
-File API: Upload and manage epilot Files
+Webhooks: Service for configuring webhooks on different events
 
 ## Example Usage
 
@@ -17,7 +17,7 @@ terraform {
   required_providers {
     epilot-webhook = {
       source  = "epilot-dev/epilot-webhook"
-      version = "0.4.0"
+      version = "0.5.1"
     }
   }
 }
@@ -32,6 +32,5 @@ provider "epilot-webhook" {
 
 ### Optional
 
-- `cookie_auth` (String, Sensitive)
 - `epilot_auth` (String, Sensitive)
-- `server_url` (String) Server URL (defaults to https://file.sls.epilot.io)
+- `server_url` (String) Server URL (defaults to https://webhooks.sls.epilot.io)
