@@ -1,19 +1,19 @@
 lockVersion: 2.0.0
 id: 11c8545a-deb6-44f9-ba56-e71722af6a51
 management:
-  docChecksum: e4de31707910a22fb5dedd9d9ca108f0
+  docChecksum: b54e2127b1aa78ba699f12c6cdd66048
   docVersion: 1.0.0
-  speakeasyVersion: 1.402.1
-  generationVersion: 2.422.6
-  releaseVersion: 0.5.1
-  configChecksum: d20ee36788b94d57f59bb42db523739b
+  speakeasyVersion: 1.405.6
+  generationVersion: 2.428.1
+  releaseVersion: 0.5.2
+  configChecksum: 471a6ca87ca9d7fa8a17e03752cec27c
   repoURL: https://github.com/epilot-dev/terraform-provider-epilot-webhook.git
   repoSubDirectory: .
   published: true
 features:
   terraform:
     additionalDependencies: 0.1.0
-    core: 3.24.12
+    core: 3.24.15
     deprecations: 2.81.1
     envVarSecurityUsage: 0.1.0
     globalSecurity: 2.81.8
