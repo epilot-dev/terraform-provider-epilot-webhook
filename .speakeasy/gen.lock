@@ -1,32 +1,28 @@
 lockVersion: 2.0.0
 id: 11c8545a-deb6-44f9-ba56-e71722af6a51
 management:
-  docChecksum: e4de31707910a22fb5dedd9d9ca108f0
+  docChecksum: 7b80f93d0bf8cc2ab707fca5def00010
   docVersion: 1.0.0
-  speakeasyVersion: 1.402.1
-  generationVersion: 2.422.6
-  releaseVersion: 0.5.1
-  configChecksum: d20ee36788b94d57f59bb42db523739b
+  speakeasyVersion: 1.436.0
+  generationVersion: 2.455.2
+  releaseVersion: 0.6.0
+  configChecksum: 02dc242315f413ca52ab29695ee10230
   repoURL: https://github.com/epilot-dev/terraform-provider-epilot-webhook.git
   repoSubDirectory: .
   published: true
 features:
   terraform:
     additionalDependencies: 0.1.0
-    core: 3.24.12
+    core: 3.26.1
     deprecations: 2.81.1
     envVarSecurityUsage: 0.1.0
-    globalSecurity: 2.81.8
+    globalSecurity: 2.81.9
     globalServerURLs: 2.82.1
-    retries: 2.81.1
 generatedFiles:
   - .gitattributes
   - USAGE.md
   - examples/README.md
-  - examples/data-sources/epilot-webhook_webhook/data-source.tf
   - examples/provider/provider.tf
-  - examples/resources/epilot-webhook_webhook/import.sh
-  - examples/resources/epilot-webhook_webhook/resource.tf
   - go.mod
   - go.sum
   - internal/planmodifiers/boolplanmodifier/suppress_diff.go
@@ -54,18 +50,7 @@ generatedFiles:
   - internal/provider/reflect/primitive.go
   - internal/provider/reflect/slice.go
   - internal/provider/reflect/struct.go
-  - internal/provider/types/api_key_config.go
-  - internal/provider/types/auth.go
-  - internal/provider/types/basic_auth_config.go
-  - internal/provider/types/custom_o_auth_parameter.go
-  - internal/provider/types/filter.go
-  - internal/provider/types/o_auth_config.go
-  - internal/provider/types/payload_configuration.go
   - internal/provider/utils.go
-  - internal/provider/webhook_data_source.go
-  - internal/provider/webhook_data_source_sdk.go
-  - internal/provider/webhook_resource.go
-  - internal/provider/webhook_resource_sdk.go
   - internal/sdk/.gitattributes
   - internal/sdk/event.go
   - internal/sdk/events.go
