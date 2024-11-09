@@ -88,15 +88,11 @@ func (p *EpilotWebhookProvider) Configure(ctx context.Context, req provider.Conf
 }
 
 func (p *EpilotWebhookProvider) Resources(ctx context.Context) []func() resource.Resource {
-	return []func() resource.Resource{
-		NewWebhookResource,
-	}
+	return []func() resource.Resource{}
 }
 
 func (p *EpilotWebhookProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
-	return []func() datasource.DataSource{
-		NewWebhookDataSource,
-	}
+	return []func() datasource.DataSource{}
 }
 
 func New(version string) func() provider.Provider {
