@@ -25,8 +25,8 @@ type EpilotWebhookProvider struct {
 
 // EpilotWebhookProviderModel describes the provider data model.
 type EpilotWebhookProviderModel struct {
-	ServerURL  types.String `tfsdk:"server_url"`
 	EpilotAuth types.String `tfsdk:"epilot_auth"`
+	ServerURL  types.String `tfsdk:"server_url"`
 }
 
 func (p *EpilotWebhookProvider) Metadata(ctx context.Context, req provider.MetadataRequest, resp *provider.MetadataResponse) {
@@ -36,18 +36,17 @@ func (p *EpilotWebhookProvider) Metadata(ctx context.Context, req provider.Metad
 
 func (p *EpilotWebhookProvider) Schema(ctx context.Context, req provider.SchemaRequest, resp *provider.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: `Webhooks: Service for configuring webhooks on different events`,
 		Attributes: map[string]schema.Attribute{
-			"server_url": schema.StringAttribute{
-				MarkdownDescription: "Server URL (defaults to https://webhooks.sls.epilot.io)",
-				Optional:            true,
-				Required:            false,
-			},
 			"epilot_auth": schema.StringAttribute{
-				Sensitive: true,
 				Optional:  true,
+				Sensitive: true,
+			},
+			"server_url": schema.StringAttribute{
+				Description: `Server URL (defaults to https://webhooks.sls.epilot.io)`,
+				Optional:    true,
 			},
 		},
+		MarkdownDescription: `Webhooks: Service for configuring webhooks on different events`,
 	}
 }
 
@@ -76,10 +75,18 @@ func (p *EpilotWebhookProvider) Configure(ctx context.Context, req provider.Conf
 		EpilotAuth: epilotAuth,
 	}
 
+	providerHTTPTransportOpts := ProviderHTTPTransportOpts{
+		SetHeaders: make(map[string]string),
+		Transport:  http.DefaultTransport,
+	}
+
+	httpClient := http.DefaultClient
+	httpClient.Transport = NewProviderHTTPTransport(providerHTTPTransportOpts)
+
 	opts := []sdk.SDKOption{
 		sdk.WithServerURL(ServerURL),
 		sdk.WithSecurity(security),
-		sdk.WithClient(http.DefaultClient),
+		sdk.WithClient(httpClient),
 	}
 	client := sdk.New(opts...)
 
@@ -88,15 +95,11 @@ func (p *EpilotWebhookProvider) Configure(ctx context.Context, req provider.Conf
 }
 
 func (p *EpilotWebhookProvider) Resources(ctx context.Context) []func() resource.Resource {
-	return []func() resource.Resource{
-		NewWebhookResource,
-	}
+	return []func() resource.Resource{}
 }
 
 func (p *EpilotWebhookProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
-	return []func() datasource.DataSource{
-		NewWebhookDataSource,
-	}
+	return []func() datasource.DataSource{}
 }
 
 func New(version string) func() provider.Provider {
