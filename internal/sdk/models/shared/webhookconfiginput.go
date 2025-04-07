@@ -36,6 +36,99 @@ func (e *WebhookConfigStatus) UnmarshalJSON(data []byte) error {
 	}
 }
 
+type WebhookConfigInput struct {
+	Auth *Auth `json:"auth,omitempty"`
+	// creation timestamp
+	CreationTime   *string     `json:"creationTime,omitempty"`
+	EnableStaticIP *bool       `json:"enableStaticIP,omitempty"`
+	Enabled        *bool       `json:"enabled,omitempty"`
+	EventName      string      `json:"eventName"`
+	Filter         *Filter     `json:"filter,omitempty"`
+	HTTPMethod     *HTTPMethod `json:"httpMethod,omitempty"`
+	Name           string      `json:"name"`
+	// Configuration for the webhook payload
+	PayloadConfiguration *PayloadConfiguration `json:"payloadConfiguration,omitempty"`
+	Status               *WebhookConfigStatus  `json:"status,omitempty"`
+	URL                  *string               `json:"url,omitempty"`
+}
+
+func (o *WebhookConfigInput) GetAuth() *Auth {
+	if o == nil {
+		return nil
+	}
+	return o.Auth
+}
+
+func (o *WebhookConfigInput) GetCreationTime() *string {
+	if o == nil {
+		return nil
+	}
+	return o.CreationTime
+}
+
+func (o *WebhookConfigInput) GetEnableStaticIP() *bool {
+	if o == nil {
+		return nil
+	}
+	return o.EnableStaticIP
+}
+
+func (o *WebhookConfigInput) GetEnabled() *bool {
+	if o == nil {
+		return nil
+	}
+	return o.Enabled
+}
+
+func (o *WebhookConfigInput) GetEventName() string {
+	if o == nil {
+		return ""
+	}
+	return o.EventName
+}
+
+func (o *WebhookConfigInput) GetFilter() *Filter {
+	if o == nil {
+		return nil
+	}
+	return o.Filter
+}
+
+func (o *WebhookConfigInput) GetHTTPMethod() *HTTPMethod {
+	if o == nil {
+		return nil
+	}
+	return o.HTTPMethod
+}
+
+func (o *WebhookConfigInput) GetName() string {
+	if o == nil {
+		return ""
+	}
+	return o.Name
+}
+
+func (o *WebhookConfigInput) GetPayloadConfiguration() *PayloadConfiguration {
+	if o == nil {
+		return nil
+	}
+	return o.PayloadConfiguration
+}
+
+func (o *WebhookConfigInput) GetStatus() *WebhookConfigStatus {
+	if o == nil {
+		return nil
+	}
+	return o.Status
+}
+
+func (o *WebhookConfigInput) GetURL() *string {
+	if o == nil {
+		return nil
+	}
+	return o.URL
+}
+
 type WebhookConfig struct {
 	Auth *Auth `json:"auth,omitempty"`
 	// creation timestamp
