@@ -10,6 +10,10 @@ import (
 
 func (r *WebhookDataSourceModel) RefreshFromSharedWebhookConfig(resp *shared.WebhookConfig) {
 	if resp != nil {
+		r.Manifest = []types.String{}
+		for _, v := range resp.Manifest {
+			r.Manifest = append(r.Manifest, types.StringValue(v))
+		}
 		if resp.Auth == nil {
 			r.Auth = nil
 		} else {
@@ -76,6 +80,7 @@ func (r *WebhookDataSourceModel) RefreshFromSharedWebhookConfig(resp *shared.Web
 			r.HTTPMethod = types.StringNull()
 		}
 		r.ID = types.StringPointerValue(resp.ID)
+		r.JsonataExpression = types.StringPointerValue(resp.JsonataExpression)
 		r.Name = types.StringValue(resp.Name)
 		if resp.PayloadConfiguration == nil {
 			r.PayloadConfiguration = nil

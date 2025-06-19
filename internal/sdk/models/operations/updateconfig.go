@@ -9,14 +9,14 @@ import (
 
 type UpdateConfigRequest struct {
 	// Webhook config payload
-	WebhookConfig shared.WebhookConfig `request:"mediaType=application/json"`
+	WebhookConfig shared.WebhookConfigInput `request:"mediaType=application/json"`
 	// Short uuid (length 6) to identify the webhook configuration.
 	ConfigID string `pathParam:"style=simple,explode=false,name=configId"`
 }
 
-func (o *UpdateConfigRequest) GetWebhookConfig() shared.WebhookConfig {
+func (o *UpdateConfigRequest) GetWebhookConfig() shared.WebhookConfigInput {
 	if o == nil {
-		return shared.WebhookConfig{}
+		return shared.WebhookConfigInput{}
 	}
 	return o.WebhookConfig
 }

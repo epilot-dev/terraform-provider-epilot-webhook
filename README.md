@@ -59,7 +59,7 @@ terraform {
   required_providers {
     epilot-webhook = {
       source  = "epilot-dev/epilot-webhook"
-      version = "0.5.1"
+      version = "0.6.1"
     }
   }
 }
@@ -131,10 +131,12 @@ Webhooks: Service for configuring webhooks on different events
 
 <!-- Start Table of Contents [toc] -->
 ## Table of Contents
+<!-- $toc-max-depth=2 -->
+* [epilot-webhook](#epilot-webhook)
+  * [Installation](#installation)
+  * [Testing the provider locally](#testing-the-provider-locally)
+  * [Available Resources and Data Sources](#available-resources-and-data-sources)
 
-* [Installation](#installation)
-* [Available Resources and Data Sources](#available-resources-and-data-sources)
-* [Testing the provider locally](#testing-the-provider-locally)
 <!-- End Table of Contents [toc] -->
 
 <!-- Placeholder for Future Speakeasy SDK Sections -->

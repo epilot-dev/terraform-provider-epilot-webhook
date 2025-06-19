@@ -6,12 +6,16 @@ package shared
 type Metadata struct {
 	// Action that triggered the event
 	Action *string `json:"action,omitempty"`
+	// When triggered by an automation this is the id of the action
+	ActionID *string `json:"action_id,omitempty"`
 	// The name of the automation that triggered the event
 	AutomationName *string `json:"automation_name,omitempty"`
 	// ID used to track the event
 	CorrelationID *string `json:"correlation_id,omitempty"`
 	// Time of event creation
 	CreationTimestamp *string `json:"creation_timestamp,omitempty"`
+	// When triggered by an automation this is its execution id
+	ExecutionID *string `json:"execution_id,omitempty"`
 	// The ID of the given organization
 	OrganizationID string `json:"organization_id"`
 	// Origin of the event
@@ -29,6 +33,13 @@ func (o *Metadata) GetAction() *string {
 		return nil
 	}
 	return o.Action
+}
+
+func (o *Metadata) GetActionID() *string {
+	if o == nil {
+		return nil
+	}
+	return o.ActionID
 }
 
 func (o *Metadata) GetAutomationName() *string {
@@ -50,6 +61,13 @@ func (o *Metadata) GetCreationTimestamp() *string {
 		return nil
 	}
 	return o.CreationTimestamp
+}
+
+func (o *Metadata) GetExecutionID() *string {
+	if o == nil {
+		return nil
+	}
+	return o.ExecutionID
 }
 
 func (o *Metadata) GetOrganizationID() string {

@@ -37,7 +37,9 @@ func (e *WebhookConfigStatus) UnmarshalJSON(data []byte) error {
 }
 
 type WebhookConfig struct {
-	Auth *Auth `json:"auth,omitempty"`
+	// Manifest ID used to create/update the entity
+	Manifest []string `json:"_manifest,omitempty"`
+	Auth     *Auth    `json:"auth,omitempty"`
 	// creation timestamp
 	CreationTime   *string     `json:"creationTime,omitempty"`
 	EnableStaticIP *bool       `json:"enableStaticIP,omitempty"`
@@ -46,11 +48,20 @@ type WebhookConfig struct {
 	Filter         *Filter     `json:"filter,omitempty"`
 	HTTPMethod     *HTTPMethod `json:"httpMethod,omitempty"`
 	ID             *string     `json:"id,omitempty"`
-	Name           string      `json:"name"`
+	// JSONata expression to transform the payload
+	JsonataExpression *string `json:"jsonataExpression,omitempty"`
+	Name              string  `json:"name"`
 	// Configuration for the webhook payload
 	PayloadConfiguration *PayloadConfiguration `json:"payloadConfiguration,omitempty"`
 	Status               *WebhookConfigStatus  `json:"status,omitempty"`
 	URL                  *string               `json:"url,omitempty"`
+}
+
+func (o *WebhookConfig) GetManifest() []string {
+	if o == nil {
+		return nil
+	}
+	return o.Manifest
 }
 
 func (o *WebhookConfig) GetAuth() *Auth {
@@ -109,6 +120,13 @@ func (o *WebhookConfig) GetID() *string {
 	return o.ID
 }
 
+func (o *WebhookConfig) GetJsonataExpression() *string {
+	if o == nil {
+		return nil
+	}
+	return o.JsonataExpression
+}
+
 func (o *WebhookConfig) GetName() string {
 	if o == nil {
 		return ""
@@ -131,6 +149,117 @@ func (o *WebhookConfig) GetStatus() *WebhookConfigStatus {
 }
 
 func (o *WebhookConfig) GetURL() *string {
+	if o == nil {
+		return nil
+	}
+	return o.URL
+}
+
+type WebhookConfigInput struct {
+	// Manifest ID used to create/update the entity
+	Manifest []string `json:"_manifest,omitempty"`
+	Auth     *Auth    `json:"auth,omitempty"`
+	// creation timestamp
+	CreationTime   *string     `json:"creationTime,omitempty"`
+	EnableStaticIP *bool       `json:"enableStaticIP,omitempty"`
+	Enabled        *bool       `json:"enabled,omitempty"`
+	EventName      string      `json:"eventName"`
+	Filter         *Filter     `json:"filter,omitempty"`
+	HTTPMethod     *HTTPMethod `json:"httpMethod,omitempty"`
+	// JSONata expression to transform the payload
+	JsonataExpression *string `json:"jsonataExpression,omitempty"`
+	Name              string  `json:"name"`
+	// Configuration for the webhook payload
+	PayloadConfiguration *PayloadConfiguration `json:"payloadConfiguration,omitempty"`
+	Status               *WebhookConfigStatus  `json:"status,omitempty"`
+	URL                  *string               `json:"url,omitempty"`
+}
+
+func (o *WebhookConfigInput) GetManifest() []string {
+	if o == nil {
+		return nil
+	}
+	return o.Manifest
+}
+
+func (o *WebhookConfigInput) GetAuth() *Auth {
+	if o == nil {
+		return nil
+	}
+	return o.Auth
+}
+
+func (o *WebhookConfigInput) GetCreationTime() *string {
+	if o == nil {
+		return nil
+	}
+	return o.CreationTime
+}
+
+func (o *WebhookConfigInput) GetEnableStaticIP() *bool {
+	if o == nil {
+		return nil
+	}
+	return o.EnableStaticIP
+}
+
+func (o *WebhookConfigInput) GetEnabled() *bool {
+	if o == nil {
+		return nil
+	}
+	return o.Enabled
+}
+
+func (o *WebhookConfigInput) GetEventName() string {
+	if o == nil {
+		return ""
+	}
+	return o.EventName
+}
+
+func (o *WebhookConfigInput) GetFilter() *Filter {
+	if o == nil {
+		return nil
+	}
+	return o.Filter
+}
+
+func (o *WebhookConfigInput) GetHTTPMethod() *HTTPMethod {
+	if o == nil {
+		return nil
+	}
+	return o.HTTPMethod
+}
+
+func (o *WebhookConfigInput) GetJsonataExpression() *string {
+	if o == nil {
+		return nil
+	}
+	return o.JsonataExpression
+}
+
+func (o *WebhookConfigInput) GetName() string {
+	if o == nil {
+		return ""
+	}
+	return o.Name
+}
+
+func (o *WebhookConfigInput) GetPayloadConfiguration() *PayloadConfiguration {
+	if o == nil {
+		return nil
+	}
+	return o.PayloadConfiguration
+}
+
+func (o *WebhookConfigInput) GetStatus() *WebhookConfigStatus {
+	if o == nil {
+		return nil
+	}
+	return o.Status
+}
+
+func (o *WebhookConfigInput) GetURL() *string {
 	if o == nil {
 		return nil
 	}

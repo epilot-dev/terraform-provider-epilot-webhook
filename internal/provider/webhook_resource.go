@@ -43,6 +43,8 @@ type WebhookResourceModel struct {
 	Filter               *tfTypes.Filter               `tfsdk:"filter"`
 	HTTPMethod           types.String                  `tfsdk:"http_method"`
 	ID                   types.String                  `tfsdk:"id"`
+	JsonataExpression    types.String                  `tfsdk:"jsonata_expression"`
+	Manifest             []types.String                `tfsdk:"manifest"`
 	Name                 types.String                  `tfsdk:"name"`
 	PayloadConfiguration *tfTypes.PayloadConfiguration `tfsdk:"payload_configuration"`
 	Status               types.String                  `tfsdk:"status"`
@@ -255,7 +257,17 @@ func (r *WebhookResource) Schema(ctx context.Context, req resource.SchemaRequest
 			},
 			"id": schema.StringAttribute{
 				Computed: true,
-				Optional: true,
+			},
+			"jsonata_expression": schema.StringAttribute{
+				Computed:    true,
+				Optional:    true,
+				Description: `JSONata expression to transform the payload`,
+			},
+			"manifest": schema.ListAttribute{
+				Computed:    true,
+				Optional:    true,
+				ElementType: types.StringType,
+				Description: `Manifest ID used to create/update the entity`,
 			},
 			"name": schema.StringAttribute{
 				Required: true,
@@ -347,7 +359,7 @@ func (r *WebhookResource) Create(ctx context.Context, req resource.CreateRequest
 		return
 	}
 
-	request := *data.ToSharedWebhookConfig()
+	request := *data.ToSharedWebhookConfigInput()
 	res, err := r.client.Webhooks.CreateConfig(ctx, request)
 	if err != nil {
 		resp.Diagnostics.AddError("failure to invoke API", err.Error())
@@ -443,7 +455,7 @@ func (r *WebhookResource) Update(ctx context.Context, req resource.UpdateRequest
 		return
 	}
 
-	webhookConfig := *data.ToSharedWebhookConfig()
+	webhookConfig := *data.ToSharedWebhookConfigInput()
 	var configID string
 	configID = data.ID.ValueString()
 

@@ -37,6 +37,8 @@ type WebhookDataSourceModel struct {
 	Filter               *tfTypes.Filter               `tfsdk:"filter"`
 	HTTPMethod           types.String                  `tfsdk:"http_method"`
 	ID                   types.String                  `tfsdk:"id"`
+	JsonataExpression    types.String                  `tfsdk:"jsonata_expression"`
+	Manifest             []types.String                `tfsdk:"manifest"`
 	Name                 types.String                  `tfsdk:"name"`
 	PayloadConfiguration *tfTypes.PayloadConfiguration `tfsdk:"payload_configuration"`
 	Status               types.String                  `tfsdk:"status"`
@@ -151,6 +153,15 @@ func (r *WebhookDataSource) Schema(ctx context.Context, req datasource.SchemaReq
 			},
 			"id": schema.StringAttribute{
 				Computed: true,
+			},
+			"jsonata_expression": schema.StringAttribute{
+				Computed:    true,
+				Description: `JSONata expression to transform the payload`,
+			},
+			"manifest": schema.ListAttribute{
+				Computed:    true,
+				ElementType: types.StringType,
+				Description: `Manifest ID used to create/update the entity`,
 			},
 			"name": schema.StringAttribute{
 				Computed: true,

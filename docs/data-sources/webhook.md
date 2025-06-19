@@ -30,6 +30,8 @@ data "epilot-webhook_webhook" "my_webhook" {
 - `filter` (Attributes) (see [below for nested schema](#nestedatt--filter))
 - `http_method` (String)
 - `id` (String) The ID of this resource.
+- `jsonata_expression` (String) JSONata expression to transform the payload
+- `manifest` (List of String) Manifest ID used to create/update the entity
 - `name` (String)
 - `payload_configuration` (Attributes) Configuration for the webhook payload (see [below for nested schema](#nestedatt--payload_configuration))
 - `status` (String)

@@ -8,7 +8,11 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-func (r *WebhookResourceModel) ToSharedWebhookConfig() *shared.WebhookConfig {
+func (r *WebhookResourceModel) ToSharedWebhookConfigInput() *shared.WebhookConfigInput {
+	var manifest []string = []string{}
+	for _, manifestItem := range r.Manifest {
+		manifest = append(manifest, manifestItem.ValueString())
+	}
 	var auth *shared.Auth
 	if r.Auth != nil {
 		var apiKeyConfig *shared.APIKeyConfig
@@ -130,11 +134,11 @@ func (r *WebhookResourceModel) ToSharedWebhookConfig() *shared.WebhookConfig {
 	} else {
 		httpMethod1 = nil
 	}
-	id := new(string)
-	if !r.ID.IsUnknown() && !r.ID.IsNull() {
-		*id = r.ID.ValueString()
+	jsonataExpression := new(string)
+	if !r.JsonataExpression.IsUnknown() && !r.JsonataExpression.IsNull() {
+		*jsonataExpression = r.JsonataExpression.ValueString()
 	} else {
-		id = nil
+		jsonataExpression = nil
 	}
 	var name string
 	name = r.Name.ValueString()
@@ -192,7 +196,8 @@ func (r *WebhookResourceModel) ToSharedWebhookConfig() *shared.WebhookConfig {
 	} else {
 		url = nil
 	}
-	out := shared.WebhookConfig{
+	out := shared.WebhookConfigInput{
+		Manifest:             manifest,
 		Auth:                 auth,
 		CreationTime:         creationTime,
 		EnableStaticIP:       enableStaticIP,
@@ -200,7 +205,7 @@ func (r *WebhookResourceModel) ToSharedWebhookConfig() *shared.WebhookConfig {
 		EventName:            eventName,
 		Filter:               filter,
 		HTTPMethod:           httpMethod1,
-		ID:                   id,
+		JsonataExpression:    jsonataExpression,
 		Name:                 name,
 		PayloadConfiguration: payloadConfiguration,
 		Status:               status,
@@ -211,6 +216,10 @@ func (r *WebhookResourceModel) ToSharedWebhookConfig() *shared.WebhookConfig {
 
 func (r *WebhookResourceModel) RefreshFromSharedWebhookConfig(resp *shared.WebhookConfig) {
 	if resp != nil {
+		r.Manifest = []types.String{}
+		for _, v := range resp.Manifest {
+			r.Manifest = append(r.Manifest, types.StringValue(v))
+		}
 		if resp.Auth == nil {
 			r.Auth = nil
 		} else {
@@ -277,6 +286,7 @@ func (r *WebhookResourceModel) RefreshFromSharedWebhookConfig(resp *shared.Webho
 			r.HTTPMethod = types.StringNull()
 		}
 		r.ID = types.StringPointerValue(resp.ID)
+		r.JsonataExpression = types.StringPointerValue(resp.JsonataExpression)
 		r.Name = types.StringValue(resp.Name)
 		if resp.PayloadConfiguration == nil {
 			r.PayloadConfiguration = nil

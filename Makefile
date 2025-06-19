@@ -2,7 +2,8 @@
 all: speakeasy docs
 
 original.yaml:
-	curl https://docs.api.epilot.io/webhooks.yaml > original.yaml
+	cp openapi.yml original.yaml
+# curl https://docs.api.epilot.io/webhooks.yaml > original.yaml
 
 
 original_modified.yaml: original.yaml overlay.yaml
