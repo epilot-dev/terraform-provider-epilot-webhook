@@ -41,7 +41,7 @@ resource "epilot-webhook_webhook" "my_webhook" {
   name = "...my_name..."
   payload_configuration = {
     custom_headers = {
-      key = "value",
+      key = "value"
     }
     hydrate_entity             = true
     include_activity           = false
