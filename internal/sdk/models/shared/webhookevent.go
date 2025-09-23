@@ -46,32 +46,32 @@ type HTTPResponse struct {
 	StatusCode *int64            `json:"status_code,omitempty"`
 }
 
-func (o *HTTPResponse) GetBody() *WebhookEventBody {
-	if o == nil {
+func (h *HTTPResponse) GetBody() *WebhookEventBody {
+	if h == nil {
 		return nil
 	}
-	return o.Body
+	return h.Body
 }
 
-func (o *HTTPResponse) GetCode() *string {
-	if o == nil {
+func (h *HTTPResponse) GetCode() *string {
+	if h == nil {
 		return nil
 	}
-	return o.Code
+	return h.Code
 }
 
-func (o *HTTPResponse) GetMessage() *string {
-	if o == nil {
+func (h *HTTPResponse) GetMessage() *string {
+	if h == nil {
 		return nil
 	}
-	return o.Message
+	return h.Message
 }
 
-func (o *HTTPResponse) GetStatusCode() *int64 {
-	if o == nil {
+func (h *HTTPResponse) GetStatusCode() *int64 {
+	if h == nil {
 		return nil
 	}
-	return o.StatusCode
+	return h.StatusCode
 }
 
 type WebhookEventStatus string
@@ -119,79 +119,79 @@ type WebhookEvent struct {
 	WebhookConfigID string              `json:"webhook_config_id"`
 }
 
-func (o *WebhookEvent) GetCreatedAt() *string {
-	if o == nil {
+func (w *WebhookEvent) GetCreatedAt() *string {
+	if w == nil {
 		return nil
 	}
-	return o.CreatedAt
+	return w.CreatedAt
 }
 
-func (o *WebhookEvent) GetEventID() string {
-	if o == nil {
+func (w *WebhookEvent) GetEventID() string {
+	if w == nil {
 		return ""
 	}
-	return o.EventID
+	return w.EventID
 }
 
-func (o *WebhookEvent) GetEventName() *string {
-	if o == nil {
+func (w *WebhookEvent) GetEventName() *string {
+	if w == nil {
 		return nil
 	}
-	return o.EventName
+	return w.EventName
 }
 
-func (o *WebhookEvent) GetHTTPMethod() *WebhookEventHTTPMethod {
-	if o == nil {
+func (w *WebhookEvent) GetHTTPMethod() *WebhookEventHTTPMethod {
+	if w == nil {
 		return nil
 	}
-	return o.HTTPMethod
+	return w.HTTPMethod
 }
 
-func (o *WebhookEvent) GetHTTPResponse() *HTTPResponse {
-	if o == nil {
+func (w *WebhookEvent) GetHTTPResponse() *HTTPResponse {
+	if w == nil {
 		return nil
 	}
-	return o.HTTPResponse
+	return w.HTTPResponse
 }
 
-func (o *WebhookEvent) GetMetadata() *Metadata {
-	if o == nil {
+func (w *WebhookEvent) GetMetadata() *Metadata {
+	if w == nil {
 		return nil
 	}
-	return o.Metadata
+	return w.Metadata
 }
 
-func (o *WebhookEvent) GetOrgID() string {
-	if o == nil {
+func (w *WebhookEvent) GetOrgID() string {
+	if w == nil {
 		return ""
 	}
-	return o.OrgID
+	return w.OrgID
 }
 
-func (o *WebhookEvent) GetPayload() *string {
-	if o == nil {
+func (w *WebhookEvent) GetPayload() *string {
+	if w == nil {
 		return nil
 	}
-	return o.Payload
+	return w.Payload
 }
 
-func (o *WebhookEvent) GetStatus() *WebhookEventStatus {
-	if o == nil {
+func (w *WebhookEvent) GetStatus() *WebhookEventStatus {
+	if w == nil {
 		return nil
 	}
-	return o.Status
+	return w.Status
 }
 
-func (o *WebhookEvent) GetURL() *string {
-	if o == nil {
+func (w *WebhookEvent) GetURL() *string {
+	if w == nil {
 		return nil
 	}
-	return o.URL
+	return w.URL
 }
 
-func (o *WebhookEvent) GetWebhookConfigID() string {
-	if o == nil {
+func (w *WebhookEvent) GetWebhookConfigID() string {
+	if w == nil {
 		return ""
 	}
-	return o.WebhookConfigID
+	return w.WebhookConfigID
 }

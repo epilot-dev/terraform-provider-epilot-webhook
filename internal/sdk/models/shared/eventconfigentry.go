@@ -9,16 +9,16 @@ type EventConfigEntry struct {
 	EventName *string `json:"eventName,omitempty"`
 }
 
-func (o *EventConfigEntry) GetEventLabel() *string {
-	if o == nil {
+func (e *EventConfigEntry) GetEventLabel() *string {
+	if e == nil {
 		return nil
 	}
-	return o.EventLabel
+	return e.EventLabel
 }
 
-func (o *EventConfigEntry) GetEventName() *string {
-	if o == nil {
+func (e *EventConfigEntry) GetEventName() *string {
+	if e == nil {
 		return nil
 	}
-	return o.EventName
+	return e.EventName
 }

@@ -43,23 +43,23 @@ type CustomOAuthParameter struct {
 	Value string `json:"value"`
 }
 
-func (o *CustomOAuthParameter) GetKey() string {
-	if o == nil {
+func (c *CustomOAuthParameter) GetKey() string {
+	if c == nil {
 		return ""
 	}
-	return o.Key
+	return c.Key
 }
 
-func (o *CustomOAuthParameter) GetType() Type {
-	if o == nil {
+func (c *CustomOAuthParameter) GetType() Type {
+	if c == nil {
 		return Type("")
 	}
-	return o.Type
+	return c.Type
 }
 
-func (o *CustomOAuthParameter) GetValue() string {
-	if o == nil {
+func (c *CustomOAuthParameter) GetValue() string {
+	if c == nil {
 		return ""
 	}
-	return o.Value
+	return c.Value
 }

@@ -57,102 +57,102 @@ type WebhookConfig struct {
 	URL                  *string               `json:"url,omitempty"`
 }
 
-func (o *WebhookConfig) GetManifest() []string {
-	if o == nil {
+func (w *WebhookConfig) GetManifest() []string {
+	if w == nil {
 		return nil
 	}
-	return o.Manifest
+	return w.Manifest
 }
 
-func (o *WebhookConfig) GetAuth() *Auth {
-	if o == nil {
+func (w *WebhookConfig) GetAuth() *Auth {
+	if w == nil {
 		return nil
 	}
-	return o.Auth
+	return w.Auth
 }
 
-func (o *WebhookConfig) GetCreationTime() *string {
-	if o == nil {
+func (w *WebhookConfig) GetCreationTime() *string {
+	if w == nil {
 		return nil
 	}
-	return o.CreationTime
+	return w.CreationTime
 }
 
-func (o *WebhookConfig) GetEnableStaticIP() *bool {
-	if o == nil {
+func (w *WebhookConfig) GetEnableStaticIP() *bool {
+	if w == nil {
 		return nil
 	}
-	return o.EnableStaticIP
+	return w.EnableStaticIP
 }
 
-func (o *WebhookConfig) GetEnabled() *bool {
-	if o == nil {
+func (w *WebhookConfig) GetEnabled() *bool {
+	if w == nil {
 		return nil
 	}
-	return o.Enabled
+	return w.Enabled
 }
 
-func (o *WebhookConfig) GetEventName() string {
-	if o == nil {
+func (w *WebhookConfig) GetEventName() string {
+	if w == nil {
 		return ""
 	}
-	return o.EventName
+	return w.EventName
 }
 
-func (o *WebhookConfig) GetFilter() *Filter {
-	if o == nil {
+func (w *WebhookConfig) GetFilter() *Filter {
+	if w == nil {
 		return nil
 	}
-	return o.Filter
+	return w.Filter
 }
 
-func (o *WebhookConfig) GetHTTPMethod() *HTTPMethod {
-	if o == nil {
+func (w *WebhookConfig) GetHTTPMethod() *HTTPMethod {
+	if w == nil {
 		return nil
 	}
-	return o.HTTPMethod
+	return w.HTTPMethod
 }
 
-func (o *WebhookConfig) GetID() *string {
-	if o == nil {
+func (w *WebhookConfig) GetID() *string {
+	if w == nil {
 		return nil
 	}
-	return o.ID
+	return w.ID
 }
 
-func (o *WebhookConfig) GetJsonataExpression() *string {
-	if o == nil {
+func (w *WebhookConfig) GetJsonataExpression() *string {
+	if w == nil {
 		return nil
 	}
-	return o.JsonataExpression
+	return w.JsonataExpression
 }
 
-func (o *WebhookConfig) GetName() string {
-	if o == nil {
+func (w *WebhookConfig) GetName() string {
+	if w == nil {
 		return ""
 	}
-	return o.Name
+	return w.Name
 }
 
-func (o *WebhookConfig) GetPayloadConfiguration() *PayloadConfiguration {
-	if o == nil {
+func (w *WebhookConfig) GetPayloadConfiguration() *PayloadConfiguration {
+	if w == nil {
 		return nil
 	}
-	return o.PayloadConfiguration
+	return w.PayloadConfiguration
 }
 
-func (o *WebhookConfig) GetStatus() *WebhookConfigStatus {
-	if o == nil {
+func (w *WebhookConfig) GetStatus() *WebhookConfigStatus {
+	if w == nil {
 		return nil
 	}
-	return o.Status
+	return w.Status
 }
 
-func (o *WebhookConfig) GetURL() *string {
-	if o == nil {
+func (w *WebhookConfig) GetURL() *string {
+	if w == nil {
 		return nil
 	}
-	return o.URL
+	return w.URL
 }
 
 type WebhookConfigInput struct {
@@ -175,93 +175,93 @@ type WebhookConfigInput struct {
 	URL                  *string               `json:"url,omitempty"`
 }
 
-func (o *WebhookConfigInput) GetManifest() []string {
-	if o == nil {
+func (w *WebhookConfigInput) GetManifest() []string {
+	if w == nil {
 		return nil
 	}
-	return o.Manifest
+	return w.Manifest
 }
 
-func (o *WebhookConfigInput) GetAuth() *Auth {
-	if o == nil {
+func (w *WebhookConfigInput) GetAuth() *Auth {
+	if w == nil {
 		return nil
 	}
-	return o.Auth
+	return w.Auth
 }
 
-func (o *WebhookConfigInput) GetCreationTime() *string {
-	if o == nil {
+func (w *WebhookConfigInput) GetCreationTime() *string {
+	if w == nil {
 		return nil
 	}
-	return o.CreationTime
+	return w.CreationTime
 }
 
-func (o *WebhookConfigInput) GetEnableStaticIP() *bool {
-	if o == nil {
+func (w *WebhookConfigInput) GetEnableStaticIP() *bool {
+	if w == nil {
 		return nil
 	}
-	return o.EnableStaticIP
+	return w.EnableStaticIP
 }
 
-func (o *WebhookConfigInput) GetEnabled() *bool {
-	if o == nil {
+func (w *WebhookConfigInput) GetEnabled() *bool {
+	if w == nil {
 		return nil
 	}
-	return o.Enabled
+	return w.Enabled
 }
 
-func (o *WebhookConfigInput) GetEventName() string {
-	if o == nil {
+func (w *WebhookConfigInput) GetEventName() string {
+	if w == nil {
 		return ""
 	}
-	return o.EventName
+	return w.EventName
 }
 
-func (o *WebhookConfigInput) GetFilter() *Filter {
-	if o == nil {
+func (w *WebhookConfigInput) GetFilter() *Filter {
+	if w == nil {
 		return nil
 	}
-	return o.Filter
+	return w.Filter
 }
 
-func (o *WebhookConfigInput) GetHTTPMethod() *HTTPMethod {
-	if o == nil {
+func (w *WebhookConfigInput) GetHTTPMethod() *HTTPMethod {
+	if w == nil {
 		return nil
 	}
-	return o.HTTPMethod
+	return w.HTTPMethod
 }
 
-func (o *WebhookConfigInput) GetJsonataExpression() *string {
-	if o == nil {
+func (w *WebhookConfigInput) GetJsonataExpression() *string {
+	if w == nil {
 		return nil
 	}
-	return o.JsonataExpression
+	return w.JsonataExpression
 }
 
-func (o *WebhookConfigInput) GetName() string {
-	if o == nil {
+func (w *WebhookConfigInput) GetName() string {
+	if w == nil {
 		return ""
 	}
-	return o.Name
+	return w.Name
 }
 
-func (o *WebhookConfigInput) GetPayloadConfiguration() *PayloadConfiguration {
-	if o == nil {
+func (w *WebhookConfigInput) GetPayloadConfiguration() *PayloadConfiguration {
+	if w == nil {
 		return nil
 	}
-	return o.PayloadConfiguration
+	return w.PayloadConfiguration
 }
 
-func (o *WebhookConfigInput) GetStatus() *WebhookConfigStatus {
-	if o == nil {
+func (w *WebhookConfigInput) GetStatus() *WebhookConfigStatus {
+	if w == nil {
 		return nil
 	}
-	return o.Status
+	return w.Status
 }
 
-func (o *WebhookConfigInput) GetURL() *string {
-	if o == nil {
+func (w *WebhookConfigInput) GetURL() *string {
+	if w == nil {
 		return nil
 	}
-	return o.URL
+	return w.URL
 }

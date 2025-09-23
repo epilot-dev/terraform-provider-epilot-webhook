@@ -7,16 +7,16 @@ type Filter struct {
 	SupportedValues []string `json:"supportedValues"`
 }
 
-func (o *Filter) GetKeyToFilter() string {
-	if o == nil {
+func (f *Filter) GetKeyToFilter() string {
+	if f == nil {
 		return ""
 	}
-	return o.KeyToFilter
+	return f.KeyToFilter
 }
 
-func (o *Filter) GetSupportedValues() []string {
-	if o == nil {
+func (f *Filter) GetSupportedValues() []string {
+	if f == nil {
 		return []string{}
 	}
-	return o.SupportedValues
+	return f.SupportedValues
 }

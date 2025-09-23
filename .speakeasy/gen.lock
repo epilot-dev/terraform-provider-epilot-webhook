@@ -3,35 +3,36 @@ id: 11c8545a-deb6-44f9-ba56-e71722af6a51
 management:
   docChecksum: d406e174b395ffdd13c3e110f40a4478
   docVersion: 1.0.0
-  speakeasyVersion: 1.477.0
-  generationVersion: 2.497.0
-  releaseVersion: 0.6.1
-  configChecksum: a22e46cf0c7be0c9983f93c3668797a7
+  speakeasyVersion: 1.622.1
+  generationVersion: 2.709.0
+  releaseVersion: 0.7.0
+  configChecksum: 2ea7036d34018d96163072292bfadc6b
   repoURL: https://github.com/epilot-dev/terraform-provider-epilot-webhook.git
   repoSubDirectory: .
   published: true
 features:
   terraform:
     additionalDependencies: 0.1.0
-    core: 3.29.0
-    deprecations: 2.81.1
-    envVarSecurityUsage: 0.1.0
-    globalSecurity: 2.81.9
-    globalServerURLs: 2.82.1
+    core: 3.45.0
+    deprecations: 2.82.0
+    globalSecurity: 2.82.1
+    globalServerURLs: 2.83.0
     inputOutputModels: 2.83.0
-    retries: 2.81.2
+    retries: 2.81.4
 generatedFiles:
   - .gitattributes
   - USAGE.md
-  - examples/README.md
   - examples/data-sources/epilot-webhook_webhook/data-source.tf
   - examples/provider/provider.tf
+  - examples/resources/epilot-webhook_webhook/import-by-string-id.tf
   - examples/resources/epilot-webhook_webhook/import.sh
   - examples/resources/epilot-webhook_webhook/resource.tf
   - go.mod
   - go.sum
   - internal/planmodifiers/boolplanmodifier/suppress_diff.go
+  - internal/planmodifiers/float32planmodifier/suppress_diff.go
   - internal/planmodifiers/float64planmodifier/suppress_diff.go
+  - internal/planmodifiers/int32planmodifier/suppress_diff.go
   - internal/planmodifiers/int64planmodifier/suppress_diff.go
   - internal/planmodifiers/listplanmodifier/suppress_diff.go
   - internal/planmodifiers/mapplanmodifier/suppress_diff.go
@@ -55,6 +56,9 @@ generatedFiles:
   - internal/provider/reflect/primitive.go
   - internal/provider/reflect/slice.go
   - internal/provider/reflect/struct.go
+  - internal/provider/typeconvert/date.go
+  - internal/provider/typeconvert/datetime.go
+  - internal/provider/typeconvert/int.go
   - internal/provider/types/api_key_config.go
   - internal/provider/types/auth.go
   - internal/provider/types/basic_auth_config.go
@@ -68,8 +72,10 @@ generatedFiles:
   - internal/provider/webhook_resource.go
   - internal/provider/webhook_resource_sdk.go
   - internal/sdk/.gitattributes
+  - internal/sdk/docs/models/operations/option.md
   - internal/sdk/event.go
   - internal/sdk/events.go
+  - internal/sdk/internal/config/sdkconfiguration.go
   - internal/sdk/internal/hooks/hooks.go
   - internal/sdk/internal/utils/contenttype.go
   - internal/sdk/internal/utils/env.go
@@ -117,6 +123,8 @@ generatedFiles:
   - internal/sdk/models/shared/triggerwebhookresp.go
   - internal/sdk/models/shared/webhookconfig.go
   - internal/sdk/models/shared/webhookevent.go
+  - internal/sdk/optionalnullable/optionalnullable.go
+  - internal/sdk/optionalnullable/optionalnullable_test.go
   - internal/sdk/retry/config.go
   - internal/sdk/sdk.go
   - internal/sdk/trigger.go
@@ -131,7 +139,9 @@ generatedFiles:
   - internal/validators/JSONParseValidator.go
   - internal/validators/RFC3339Validator.go
   - internal/validators/boolvalidators/not_null.go
+  - internal/validators/float32validators/not_null.go
   - internal/validators/float64validators/not_null.go
+  - internal/validators/int32validators/not_null.go
   - internal/validators/int64validators/not_null.go
   - internal/validators/listvalidators/not_null.go
   - internal/validators/mapvalidators/not_null.go
@@ -155,36 +165,42 @@ examples:
         "500":
           application/json: {}
   deleteConfig:
-    "":
+    speakeasy-default-delete-config:
       parameters:
         path:
           configId: "CustomerRequest"
+      responses:
+        "401":
+          application/json: {}
   getConfig:
-    "":
+    speakeasy-default-get-config:
       parameters:
         path:
           configId: "7hj28aasgag2gha2"
       responses:
         "200":
           application/json: {"auth": {"authType": "BASIC", "basicAuthConfig": {"password": "secret7825@!", "username": "secretUsername"}}, "enabled": true, "eventName": "CustomerRequest_Created", "filter": {"keyToFilter": "customer_request.productId", "supportedValues": ["2324245", "5253642"]}, "httpMethod": "POST", "name": "<value>", "url": "https://my-partner-service.api.com"}
-        "404": {}
-        "500": {}
+        "404":
+          application/json: {}
+        "500":
+          application/json: {}
   getConfigs:
-    "":
+    speakeasy-default-get-configs:
       parameters:
         query:
           eventName: "customer_request_created"
       responses:
         "200":
           application/json: [{"auth": {"authType": "BASIC", "basicAuthConfig": {"password": "secret7825@!", "username": "secretUsername"}}, "enabled": true, "eventName": "CustomerRequest_Created", "filter": {"keyToFilter": "customer_request.productId", "supportedValues": ["2324245", "5253642"]}, "httpMethod": "POST", "name": "<value>", "url": "https://my-partner-service.api.com"}]
-        "500": {}
+        "500":
+          application/json: {}
   getConfiguredEvents:
     speakeasy-default-get-configured-events:
       responses:
         "200":
           application/json: [{"eventLabel": "Customer Request Created", "eventName": "customer_request_created"}]
   getEventById:
-    "":
+    speakeasy-default-get-event-by-id:
       parameters:
         path:
           configId: "7hj28aasgag2gha2"
@@ -192,21 +208,25 @@ examples:
       responses:
         "200":
           application/json: {"created_at": "2021-04-27T12:01:13.000Z", "event_id": "<id>", "metadata": {"action": "Manual triggered by user with id 123456", "organization_id": "<id>"}, "org_id": "<id>", "webhook_config_id": "<id>"}
-        "404": {}
-        "500": {}
+        "404":
+          application/json: {}
+        "500":
+          application/json: {}
   getFailures:
-    "":
+    speakeasy-default-get-failures:
       parameters:
         query:
           lastLoadedEventId: "1f143bd2-f816-4d7d-b33d-056db6e1ef7b"
           lastLoadedTimestamp: "2021:05:06T12:00:26.000Z"
       responses:
         "200":
-          application/json: {"failures": [{"creationTimestamp": "2021-04-13T17:43:40.576Z", "errorCode": "502", "errorPayload": "Failed to store data", "eventId": "12e8726b-071b-4c42-9221-8caae0d14863", "eventName": "customer_request_created,", "orgId": "728", "url": "https://63b2de56be27.ngrok.io", "webhookConfigId": "kreauMGUr55nDoVviaaBLG"}, {"creationTimestamp": "2021-04-13T17:43:40.576Z", "errorCode": "404", "errorPayload": "Tunnel ef68038e3af9.ngrok.io not found", "eventId": "fc51a730-9730-4b55-8aa1-dd6d66b7e3e2", "eventName": "customer_request_created", "orgId": "728", "url": "https://ef68038e3af9.ngrok.io", "webhookConfigId": "xrExypA8HBWEtK9AXfU2de"}], "lastLoadedKey": {"creationTimestamp": "2022:01:01T00:00:00.000Z", "eventId": "fc51a730-9730-4b55-8aa1-dd6d66b7e3e2", "orgId": "6122"}}
-        "400": {}
-        "500": {}
+          application/json: {"failures": [{"creationTimestamp": "2021-04-13T17:43:40.576Z", "errorCode": "502", "errorPayload": "Failed to store data", "eventId": "12e8726b-071b-4c42-9221-8caae0d14863", "eventName": "customer_request_created,", "orgId": "728", "payload": {}, "url": "https://63b2de56be27.ngrok.io", "webhookConfigId": "kreauMGUr55nDoVviaaBLG"}, {"creationTimestamp": "2021-04-13T17:43:40.576Z", "errorCode": "404", "errorPayload": "Tunnel ef68038e3af9.ngrok.io not found", "eventId": "fc51a730-9730-4b55-8aa1-dd6d66b7e3e2", "eventName": "customer_request_created", "orgId": "728", "payload": {}, "url": "https://ef68038e3af9.ngrok.io", "webhookConfigId": "xrExypA8HBWEtK9AXfU2de"}], "lastLoadedKey": {"creationTimestamp": "2022:01:01T00:00:00.000Z", "eventId": "fc51a730-9730-4b55-8aa1-dd6d66b7e3e2", "orgId": "6122"}}
+        "400":
+          application/json: {}
+        "500":
+          application/json: {}
   getFailuresForConfig:
-    "":
+    speakeasy-default-get-failures-for-config:
       parameters:
         path:
           configId: "7hj28aasgag2gha2"
@@ -214,11 +234,13 @@ examples:
           lastLoadedEventId: "1f143bd2-f816-4d7d-b33d-056db6e1ef7b"
       responses:
         "200":
-          application/json: {"failures": [{"creationTimestamp": "2021-04-13T17:43:40.576Z", "errorCode": "502", "errorPayload": "Failed to store data", "eventId": "12e8726b-071b-4c42-9221-8caae0d14863", "eventName": "customer_request_created,", "orgId": "728", "url": "https://63b2de56be27.ngrok.io", "webhookConfigId": "kreauMGUr55nDoVviaaBLG"}, {"creationTimestamp": "2021-04-13T17:43:40.576Z", "errorCode": "404", "errorPayload": "Tunnel ef68038e3af9.ngrok.io not found", "eventId": "fc51a730-9730-4b55-8aa1-dd6d66b7e3e2", "eventName": "customer_request_created", "orgId": "728", "url": "https://ef68038e3af9.ngrok.io", "webhookConfigId": "xrExypA8HBWEtK9AXfU2de"}], "lastLoadedKey": {"creationTimestamp": "2022:01:01T00:00:00.000Z", "eventId": "fc51a730-9730-4b55-8aa1-dd6d66b7e3e2", "orgId": "6122"}}
-        "404": {}
-        "500": {}
+          application/json: {"failures": [{"creationTimestamp": "2021-04-13T17:43:40.576Z", "errorCode": "502", "errorPayload": "Failed to store data", "eventId": "12e8726b-071b-4c42-9221-8caae0d14863", "eventName": "customer_request_created,", "orgId": "728", "payload": {}, "url": "https://63b2de56be27.ngrok.io", "webhookConfigId": "kreauMGUr55nDoVviaaBLG"}, {"creationTimestamp": "2021-04-13T17:43:40.576Z", "errorCode": "404", "errorPayload": "Tunnel ef68038e3af9.ngrok.io not found", "eventId": "fc51a730-9730-4b55-8aa1-dd6d66b7e3e2", "eventName": "customer_request_created", "orgId": "728", "payload": {}, "url": "https://ef68038e3af9.ngrok.io", "webhookConfigId": "xrExypA8HBWEtK9AXfU2de"}], "lastLoadedKey": {"creationTimestamp": "2022:01:01T00:00:00.000Z", "eventId": "fc51a730-9730-4b55-8aa1-dd6d66b7e3e2", "orgId": "6122"}}
+        "404":
+          application/json: {}
+        "500":
+          application/json: {}
   getWehookEvents:
-    "":
+    speakeasy-default-get-wehook-events:
       parameters:
         path:
           configId: "7hj28aasgag2gha2"
@@ -226,15 +248,22 @@ examples:
           status: "succeeded"
       responses:
         "200":
-          application/json: {"data": [{"created_at": "2021-04-27T12:01:13.000Z", "event_id": "<id>", "metadata": {"action": "Manual triggered by user with id 123456", "organization_id": "<id>"}, "org_id": "<id>", "webhook_config_id": "<id>"}, {"created_at": "2021-04-27T12:01:13.000Z", "event_id": "<id>", "metadata": {"action": "Manual triggered by user with id 123456", "organization_id": "<id>"}, "org_id": "<id>", "webhook_config_id": "<id>"}]}
-        "404": {}
-        "500": {}
+          application/json: {"data": [{"created_at": "2021-04-27T12:01:13.000Z", "event_id": "<id>", "metadata": {"action": "Manual triggered by user with id 123456", "organization_id": "<id>"}, "org_id": "<id>", "webhook_config_id": "<id>"}]}
+        "404":
+          application/json: {}
+        "500":
+          application/json: {}
   replayEvent:
-    "":
+    speakeasy-default-replay-event:
       parameters:
         path:
           configId: "7hj28aasgag2gha2"
           eventId: "<id>"
+      responses:
+        "404":
+          application/json: {}
+        "500":
+          application/json: {}
   resendFailure:
     speakeasy-default-resend-failure:
       requestBody:
@@ -245,15 +274,21 @@ examples:
         "500":
           application/json: {}
   triggerWebhook:
-    "":
+    speakeasy-default-trigger-webhook:
       parameters:
         path:
           configId: "7hj28aasgag2gha2"
-        query: {}
       requestBody:
         application/json: {"metadata": {"action": "Manual triggered by user with id 123456", "organization_id": "<id>"}}
+      responses:
+        "200":
+          application/json: {}
+        "400":
+          application/json: {}
+        "500":
+          application/json: {}
   updateConfig:
-    "":
+    speakeasy-default-update-config:
       parameters:
         path:
           configId: "7hj28a"
@@ -262,7 +297,9 @@ examples:
       responses:
         "200":
           application/json: {"auth": {"authType": "BASIC", "basicAuthConfig": {"password": "secret7825@!", "username": "secretUsername"}}, "enabled": true, "eventName": "CustomerRequest_Created", "filter": {"keyToFilter": "customer_request.productId", "supportedValues": ["2324245", "5253642"]}, "httpMethod": "POST", "name": "<value>", "url": "https://my-partner-service.api.com"}
-        "400": {}
-        "500": {}
-examplesVersion: 1.0.0
+        "400":
+          application/json: {}
+        "500":
+          application/json: {}
+examplesVersion: 1.0.2
 generatedTests: {}
