@@ -7,7 +7,6 @@ import (
 	"fmt"
 	tfTypes "github.com/epilot-dev/terraform-provider-epilot-webhook/internal/provider/types"
 	"github.com/epilot-dev/terraform-provider-epilot-webhook/internal/sdk"
-	"github.com/epilot-dev/terraform-provider-epilot-webhook/internal/sdk/models/operations"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -24,6 +23,7 @@ func NewWebhookDataSource() datasource.DataSource {
 
 // WebhookDataSource is the data source implementation.
 type WebhookDataSource struct {
+	// Provider configured SDK client.
 	client *sdk.SDK
 }
 
@@ -31,8 +31,8 @@ type WebhookDataSource struct {
 type WebhookDataSourceModel struct {
 	Auth                 *tfTypes.Auth                 `tfsdk:"auth"`
 	CreationTime         types.String                  `tfsdk:"creation_time"`
-	EnableStaticIP       types.Bool                    `tfsdk:"enable_static_ip"`
 	Enabled              types.Bool                    `tfsdk:"enabled"`
+	EnableStaticIP       types.Bool                    `tfsdk:"enable_static_ip"`
 	EventName            types.String                  `tfsdk:"event_name"`
 	Filter               *tfTypes.Filter               `tfsdk:"filter"`
 	HTTPMethod           types.String                  `tfsdk:"http_method"`
@@ -237,13 +237,13 @@ func (r *WebhookDataSource) Read(ctx context.Context, req datasource.ReadRequest
 		return
 	}
 
-	var configID string
-	configID = data.ID.ValueString()
+	request, requestDiags := data.ToOperationsGetConfigRequest(ctx)
+	resp.Diagnostics.Append(requestDiags...)
 
-	request := operations.GetConfigRequest{
-		ConfigID: configID,
+	if resp.Diagnostics.HasError() {
+		return
 	}
-	res, err := r.client.Webhooks.GetConfig(ctx, request)
+	res, err := r.client.Webhooks.GetConfig(ctx, *request)
 	if err != nil {
 		resp.Diagnostics.AddError("failure to invoke API", err.Error())
 		if res != nil && res.RawResponse != nil {
@@ -255,10 +255,6 @@ func (r *WebhookDataSource) Read(ctx context.Context, req datasource.ReadRequest
 		resp.Diagnostics.AddError("unexpected response from API", fmt.Sprintf("%v", res))
 		return
 	}
-	if res.StatusCode == 404 {
-		resp.State.RemoveResource(ctx)
-		return
-	}
 	if res.StatusCode != 200 {
 		resp.Diagnostics.AddError(fmt.Sprintf("unexpected response from API. Got an unexpected response code %v", res.StatusCode), debugResponse(res.RawResponse))
 		return
@@ -267,7 +263,11 @@ func (r *WebhookDataSource) Read(ctx context.Context, req datasource.ReadRequest
 		resp.Diagnostics.AddError("unexpected response from API. Got an unexpected response body", debugResponse(res.RawResponse))
 		return
 	}
-	data.RefreshFromSharedWebhookConfig(res.WebhookConfig)
+	resp.Diagnostics.Append(data.RefreshFromSharedWebhookConfig(ctx, res.WebhookConfig)...)
+
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)

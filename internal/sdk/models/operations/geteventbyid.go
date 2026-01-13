@@ -14,18 +14,18 @@ type GetEventByIDRequest struct {
 	EventID string `pathParam:"style=simple,explode=false,name=eventId"`
 }
 
-func (o *GetEventByIDRequest) GetConfigID() string {
-	if o == nil {
+func (g *GetEventByIDRequest) GetConfigID() string {
+	if g == nil {
 		return ""
 	}
-	return o.ConfigID
+	return g.ConfigID
 }
 
-func (o *GetEventByIDRequest) GetEventID() string {
-	if o == nil {
+func (g *GetEventByIDRequest) GetEventID() string {
+	if g == nil {
 		return ""
 	}
-	return o.EventID
+	return g.EventID
 }
 
 type GetEventByIDResponse struct {
@@ -41,37 +41,37 @@ type GetEventByIDResponse struct {
 	WebhookEvent *shared.WebhookEvent
 }
 
-func (o *GetEventByIDResponse) GetContentType() string {
-	if o == nil {
+func (g *GetEventByIDResponse) GetContentType() string {
+	if g == nil {
 		return ""
 	}
-	return o.ContentType
+	return g.ContentType
 }
 
-func (o *GetEventByIDResponse) GetErrorResp() *shared.ErrorResp {
-	if o == nil {
+func (g *GetEventByIDResponse) GetErrorResp() *shared.ErrorResp {
+	if g == nil {
 		return nil
 	}
-	return o.ErrorResp
+	return g.ErrorResp
 }
 
-func (o *GetEventByIDResponse) GetStatusCode() int {
-	if o == nil {
+func (g *GetEventByIDResponse) GetStatusCode() int {
+	if g == nil {
 		return 0
 	}
-	return o.StatusCode
+	return g.StatusCode
 }
 
-func (o *GetEventByIDResponse) GetRawResponse() *http.Response {
-	if o == nil {
+func (g *GetEventByIDResponse) GetRawResponse() *http.Response {
+	if g == nil {
 		return nil
 	}
-	return o.RawResponse
+	return g.RawResponse
 }
 
-func (o *GetEventByIDResponse) GetWebhookEvent() *shared.WebhookEvent {
-	if o == nil {
+func (g *GetEventByIDResponse) GetWebhookEvent() *shared.WebhookEvent {
+	if g == nil {
 		return nil
 	}
-	return o.WebhookEvent
+	return g.WebhookEvent
 }

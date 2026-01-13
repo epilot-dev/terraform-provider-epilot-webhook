@@ -8,16 +8,16 @@ type APIKeyConfig struct {
 	KeyValue *string `json:"keyValue,omitempty"`
 }
 
-func (o *APIKeyConfig) GetKeyName() string {
-	if o == nil {
+func (a *APIKeyConfig) GetKeyName() string {
+	if a == nil {
 		return ""
 	}
-	return o.KeyName
+	return a.KeyName
 }
 
-func (o *APIKeyConfig) GetKeyValue() *string {
-	if o == nil {
+func (a *APIKeyConfig) GetKeyValue() *string {
+	if a == nil {
 		return nil
 	}
-	return o.KeyValue
+	return a.KeyValue
 }

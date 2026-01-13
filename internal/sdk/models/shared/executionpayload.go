@@ -8,9 +8,9 @@ type ExecutionPayload struct {
 	Metadata Metadata `json:"metadata"`
 }
 
-func (o *ExecutionPayload) GetMetadata() Metadata {
-	if o == nil {
+func (e *ExecutionPayload) GetMetadata() Metadata {
+	if e == nil {
 		return Metadata{}
 	}
-	return o.Metadata
+	return e.Metadata
 }

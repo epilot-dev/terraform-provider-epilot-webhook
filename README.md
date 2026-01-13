@@ -59,13 +59,14 @@ terraform {
   required_providers {
     epilot-webhook = {
       source  = "epilot-dev/epilot-webhook"
-      version = "0.6.1"
+      version = "0.7.0"
     }
   }
 }
 
 provider "epilot-webhook" {
-  # Configuration options
+  epilot_auth = "<YOUR_EPILOT_AUTH>" # Required
+  server_url = "..." # Optional
 }
 ```
 <!-- End Installation [installation] -->
@@ -112,6 +113,18 @@ provider_installation {
 ```
 <!-- End Testing the provider locally [usage] -->
 
+<!-- Start Authentication [security] -->
+## Authentication
+
+This provider supports authentication configuration via provider configuration.
+
+Available configuration:
+
+| Provider Attribute | Description |
+|---|---|
+| `epilot_auth` | Authorization header with epilot OAuth2 bearer token. |
+<!-- End Authentication [security] -->
+
 <!-- Start Available Resources and Data Sources [operations] -->
 ## Available Resources and Data Sources
 
@@ -135,6 +148,7 @@ Webhooks: Service for configuring webhooks on different events
 * [epilot-webhook](#epilot-webhook)
   * [Installation](#installation)
   * [Testing the provider locally](#testing-the-provider-locally)
+  * [Authentication](#authentication)
   * [Available Resources and Data Sources](#available-resources-and-data-sources)
 
 <!-- End Table of Contents [toc] -->

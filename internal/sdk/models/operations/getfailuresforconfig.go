@@ -15,25 +15,25 @@ type GetFailuresForConfigRequest struct {
 	LastLoadedTimestamp *string `queryParam:"style=form,explode=true,name=lastLoadedTimestamp"`
 }
 
-func (o *GetFailuresForConfigRequest) GetConfigID() string {
-	if o == nil {
+func (g *GetFailuresForConfigRequest) GetConfigID() string {
+	if g == nil {
 		return ""
 	}
-	return o.ConfigID
+	return g.ConfigID
 }
 
-func (o *GetFailuresForConfigRequest) GetLastLoadedEventID() *string {
-	if o == nil {
+func (g *GetFailuresForConfigRequest) GetLastLoadedEventID() *string {
+	if g == nil {
 		return nil
 	}
-	return o.LastLoadedEventID
+	return g.LastLoadedEventID
 }
 
-func (o *GetFailuresForConfigRequest) GetLastLoadedTimestamp() *string {
-	if o == nil {
+func (g *GetFailuresForConfigRequest) GetLastLoadedTimestamp() *string {
+	if g == nil {
 		return nil
 	}
-	return o.LastLoadedTimestamp
+	return g.LastLoadedTimestamp
 }
 
 type GetFailuresForConfigResponse struct {
@@ -49,37 +49,37 @@ type GetFailuresForConfigResponse struct {
 	RawResponse *http.Response
 }
 
-func (o *GetFailuresForConfigResponse) GetContentType() string {
-	if o == nil {
+func (g *GetFailuresForConfigResponse) GetContentType() string {
+	if g == nil {
 		return ""
 	}
-	return o.ContentType
+	return g.ContentType
 }
 
-func (o *GetFailuresForConfigResponse) GetErrorResp() *shared.ErrorResp {
-	if o == nil {
+func (g *GetFailuresForConfigResponse) GetErrorResp() *shared.ErrorResp {
+	if g == nil {
 		return nil
 	}
-	return o.ErrorResp
+	return g.ErrorResp
 }
 
-func (o *GetFailuresForConfigResponse) GetFailuresResp() *shared.FailuresResp {
-	if o == nil {
+func (g *GetFailuresForConfigResponse) GetFailuresResp() *shared.FailuresResp {
+	if g == nil {
 		return nil
 	}
-	return o.FailuresResp
+	return g.FailuresResp
 }
 
-func (o *GetFailuresForConfigResponse) GetStatusCode() int {
-	if o == nil {
+func (g *GetFailuresForConfigResponse) GetStatusCode() int {
+	if g == nil {
 		return 0
 	}
-	return o.StatusCode
+	return g.StatusCode
 }
 
-func (o *GetFailuresForConfigResponse) GetRawResponse() *http.Response {
-	if o == nil {
+func (g *GetFailuresForConfigResponse) GetRawResponse() *http.Response {
+	if g == nil {
 		return nil
 	}
-	return o.RawResponse
+	return g.RawResponse
 }

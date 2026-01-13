@@ -8,16 +8,16 @@ type BasicAuthConfig struct {
 	Username string  `json:"username"`
 }
 
-func (o *BasicAuthConfig) GetPassword() *string {
-	if o == nil {
+func (b *BasicAuthConfig) GetPassword() *string {
+	if b == nil {
 		return nil
 	}
-	return o.Password
+	return b.Password
 }
 
-func (o *BasicAuthConfig) GetUsername() string {
-	if o == nil {
+func (b *BasicAuthConfig) GetUsername() string {
+	if b == nil {
 		return ""
 	}
-	return o.Username
+	return b.Username
 }

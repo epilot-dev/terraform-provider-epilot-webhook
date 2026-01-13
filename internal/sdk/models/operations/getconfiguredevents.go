@@ -18,30 +18,30 @@ type GetConfiguredEventsResponse struct {
 	RawResponse *http.Response
 }
 
-func (o *GetConfiguredEventsResponse) GetContentType() string {
-	if o == nil {
+func (g *GetConfiguredEventsResponse) GetContentType() string {
+	if g == nil {
 		return ""
 	}
-	return o.ContentType
+	return g.ContentType
 }
 
-func (o *GetConfiguredEventsResponse) GetEventConfigResp() []shared.EventConfigEntry {
-	if o == nil {
+func (g *GetConfiguredEventsResponse) GetEventConfigResp() []shared.EventConfigEntry {
+	if g == nil {
 		return nil
 	}
-	return o.EventConfigResp
+	return g.EventConfigResp
 }
 
-func (o *GetConfiguredEventsResponse) GetStatusCode() int {
-	if o == nil {
+func (g *GetConfiguredEventsResponse) GetStatusCode() int {
+	if g == nil {
 		return 0
 	}
-	return o.StatusCode
+	return g.StatusCode
 }
 
-func (o *GetConfiguredEventsResponse) GetRawResponse() *http.Response {
-	if o == nil {
+func (g *GetConfiguredEventsResponse) GetRawResponse() *http.Response {
+	if g == nil {
 		return nil
 	}
-	return o.RawResponse
+	return g.RawResponse
 }

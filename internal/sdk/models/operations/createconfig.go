@@ -20,37 +20,37 @@ type CreateConfigResponse struct {
 	WebhookConfig *shared.WebhookConfig
 }
 
-func (o *CreateConfigResponse) GetContentType() string {
-	if o == nil {
+func (c *CreateConfigResponse) GetContentType() string {
+	if c == nil {
 		return ""
 	}
-	return o.ContentType
+	return c.ContentType
 }
 
-func (o *CreateConfigResponse) GetErrorResp() *shared.ErrorResp {
-	if o == nil {
+func (c *CreateConfigResponse) GetErrorResp() *shared.ErrorResp {
+	if c == nil {
 		return nil
 	}
-	return o.ErrorResp
+	return c.ErrorResp
 }
 
-func (o *CreateConfigResponse) GetStatusCode() int {
-	if o == nil {
+func (c *CreateConfigResponse) GetStatusCode() int {
+	if c == nil {
 		return 0
 	}
-	return o.StatusCode
+	return c.StatusCode
 }
 
-func (o *CreateConfigResponse) GetRawResponse() *http.Response {
-	if o == nil {
+func (c *CreateConfigResponse) GetRawResponse() *http.Response {
+	if c == nil {
 		return nil
 	}
-	return o.RawResponse
+	return c.RawResponse
 }
 
-func (o *CreateConfigResponse) GetWebhookConfig() *shared.WebhookConfig {
-	if o == nil {
+func (c *CreateConfigResponse) GetWebhookConfig() *shared.WebhookConfig {
+	if c == nil {
 		return nil
 	}
-	return o.WebhookConfig
+	return c.WebhookConfig
 }

@@ -18,30 +18,30 @@ type ResendFailureResponse struct {
 	RawResponse *http.Response
 }
 
-func (o *ResendFailureResponse) GetContentType() string {
-	if o == nil {
+func (r *ResendFailureResponse) GetContentType() string {
+	if r == nil {
 		return ""
 	}
-	return o.ContentType
+	return r.ContentType
 }
 
-func (o *ResendFailureResponse) GetErrorResp() *shared.ErrorResp {
-	if o == nil {
+func (r *ResendFailureResponse) GetErrorResp() *shared.ErrorResp {
+	if r == nil {
 		return nil
 	}
-	return o.ErrorResp
+	return r.ErrorResp
 }
 
-func (o *ResendFailureResponse) GetStatusCode() int {
-	if o == nil {
+func (r *ResendFailureResponse) GetStatusCode() int {
+	if r == nil {
 		return 0
 	}
-	return o.StatusCode
+	return r.StatusCode
 }
 
-func (o *ResendFailureResponse) GetRawResponse() *http.Response {
-	if o == nil {
+func (r *ResendFailureResponse) GetRawResponse() *http.Response {
+	if r == nil {
 		return nil
 	}
-	return o.RawResponse
+	return r.RawResponse
 }
