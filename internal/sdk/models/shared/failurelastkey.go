@@ -10,30 +10,30 @@ type FailureLastKey struct {
 	WebhookConfigID   *string `json:"webhookConfigId,omitempty"`
 }
 
-func (o *FailureLastKey) GetCreationTimestamp() *string {
-	if o == nil {
+func (f *FailureLastKey) GetCreationTimestamp() *string {
+	if f == nil {
 		return nil
 	}
-	return o.CreationTimestamp
+	return f.CreationTimestamp
 }
 
-func (o *FailureLastKey) GetEventID() *string {
-	if o == nil {
+func (f *FailureLastKey) GetEventID() *string {
+	if f == nil {
 		return nil
 	}
-	return o.EventID
+	return f.EventID
 }
 
-func (o *FailureLastKey) GetOrgID() *string {
-	if o == nil {
+func (f *FailureLastKey) GetOrgID() *string {
+	if f == nil {
 		return nil
 	}
-	return o.OrgID
+	return f.OrgID
 }
 
-func (o *FailureLastKey) GetWebhookConfigID() *string {
-	if o == nil {
+func (f *FailureLastKey) GetWebhookConfigID() *string {
+	if f == nil {
 		return nil
 	}
-	return o.WebhookConfigID
+	return f.WebhookConfigID
 }

@@ -28,79 +28,79 @@ type Metadata struct {
 	WebhookName *string `json:"webhook_name,omitempty"`
 }
 
-func (o *Metadata) GetAction() *string {
-	if o == nil {
+func (m *Metadata) GetAction() *string {
+	if m == nil {
 		return nil
 	}
-	return o.Action
+	return m.Action
 }
 
-func (o *Metadata) GetActionID() *string {
-	if o == nil {
+func (m *Metadata) GetActionID() *string {
+	if m == nil {
 		return nil
 	}
-	return o.ActionID
+	return m.ActionID
 }
 
-func (o *Metadata) GetAutomationName() *string {
-	if o == nil {
+func (m *Metadata) GetAutomationName() *string {
+	if m == nil {
 		return nil
 	}
-	return o.AutomationName
+	return m.AutomationName
 }
 
-func (o *Metadata) GetCorrelationID() *string {
-	if o == nil {
+func (m *Metadata) GetCorrelationID() *string {
+	if m == nil {
 		return nil
 	}
-	return o.CorrelationID
+	return m.CorrelationID
 }
 
-func (o *Metadata) GetCreationTimestamp() *string {
-	if o == nil {
+func (m *Metadata) GetCreationTimestamp() *string {
+	if m == nil {
 		return nil
 	}
-	return o.CreationTimestamp
+	return m.CreationTimestamp
 }
 
-func (o *Metadata) GetExecutionID() *string {
-	if o == nil {
+func (m *Metadata) GetExecutionID() *string {
+	if m == nil {
 		return nil
 	}
-	return o.ExecutionID
+	return m.ExecutionID
 }
 
-func (o *Metadata) GetOrganizationID() string {
-	if o == nil {
+func (m *Metadata) GetOrganizationID() string {
+	if m == nil {
 		return ""
 	}
-	return o.OrganizationID
+	return m.OrganizationID
 }
 
-func (o *Metadata) GetOrigin() *string {
-	if o == nil {
+func (m *Metadata) GetOrigin() *string {
+	if m == nil {
 		return nil
 	}
-	return o.Origin
+	return m.Origin
 }
 
-func (o *Metadata) GetUserID() *string {
-	if o == nil {
+func (m *Metadata) GetUserID() *string {
+	if m == nil {
 		return nil
 	}
-	return o.UserID
+	return m.UserID
 }
 
-func (o *Metadata) GetWebhookID() *string {
-	if o == nil {
+func (m *Metadata) GetWebhookID() *string {
+	if m == nil {
 		return nil
 	}
-	return o.WebhookID
+	return m.WebhookID
 }
 
-func (o *Metadata) GetWebhookName() *string {
-	if o == nil {
+func (m *Metadata) GetWebhookName() *string {
+	if m == nil {
 		return nil
 	}
-	return o.WebhookName
+	return m.WebhookName
 }

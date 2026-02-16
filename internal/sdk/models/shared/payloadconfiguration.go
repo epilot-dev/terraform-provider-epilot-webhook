@@ -12,37 +12,37 @@ type PayloadConfiguration struct {
 	IncludeRelations         *bool             `json:"include_relations,omitempty"`
 }
 
-func (o *PayloadConfiguration) GetCustomHeaders() map[string]string {
-	if o == nil {
+func (p *PayloadConfiguration) GetCustomHeaders() map[string]string {
+	if p == nil {
 		return nil
 	}
-	return o.CustomHeaders
+	return p.CustomHeaders
 }
 
-func (o *PayloadConfiguration) GetHydrateEntity() *bool {
-	if o == nil {
+func (p *PayloadConfiguration) GetHydrateEntity() *bool {
+	if p == nil {
 		return nil
 	}
-	return o.HydrateEntity
+	return p.HydrateEntity
 }
 
-func (o *PayloadConfiguration) GetIncludeActivity() *bool {
-	if o == nil {
+func (p *PayloadConfiguration) GetIncludeActivity() *bool {
+	if p == nil {
 		return nil
 	}
-	return o.IncludeActivity
+	return p.IncludeActivity
 }
 
-func (o *PayloadConfiguration) GetIncludeChangedAttributes() *bool {
-	if o == nil {
+func (p *PayloadConfiguration) GetIncludeChangedAttributes() *bool {
+	if p == nil {
 		return nil
 	}
-	return o.IncludeChangedAttributes
+	return p.IncludeChangedAttributes
 }
 
-func (o *PayloadConfiguration) GetIncludeRelations() *bool {
-	if o == nil {
+func (p *PayloadConfiguration) GetIncludeRelations() *bool {
+	if p == nil {
 		return nil
 	}
-	return o.IncludeRelations
+	return p.IncludeRelations
 }

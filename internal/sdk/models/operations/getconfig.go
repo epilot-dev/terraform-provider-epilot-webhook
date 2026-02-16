@@ -12,11 +12,11 @@ type GetConfigRequest struct {
 	ConfigID string `pathParam:"style=simple,explode=false,name=configId"`
 }
 
-func (o *GetConfigRequest) GetConfigID() string {
-	if o == nil {
+func (g *GetConfigRequest) GetConfigID() string {
+	if g == nil {
 		return ""
 	}
-	return o.ConfigID
+	return g.ConfigID
 }
 
 type GetConfigResponse struct {
@@ -32,37 +32,37 @@ type GetConfigResponse struct {
 	WebhookConfig *shared.WebhookConfig
 }
 
-func (o *GetConfigResponse) GetContentType() string {
-	if o == nil {
+func (g *GetConfigResponse) GetContentType() string {
+	if g == nil {
 		return ""
 	}
-	return o.ContentType
+	return g.ContentType
 }
 
-func (o *GetConfigResponse) GetErrorResp() *shared.ErrorResp {
-	if o == nil {
+func (g *GetConfigResponse) GetErrorResp() *shared.ErrorResp {
+	if g == nil {
 		return nil
 	}
-	return o.ErrorResp
+	return g.ErrorResp
 }
 
-func (o *GetConfigResponse) GetStatusCode() int {
-	if o == nil {
+func (g *GetConfigResponse) GetStatusCode() int {
+	if g == nil {
 		return 0
 	}
-	return o.StatusCode
+	return g.StatusCode
 }
 
-func (o *GetConfigResponse) GetRawResponse() *http.Response {
-	if o == nil {
+func (g *GetConfigResponse) GetRawResponse() *http.Response {
+	if g == nil {
 		return nil
 	}
-	return o.RawResponse
+	return g.RawResponse
 }
 
-func (o *GetConfigResponse) GetWebhookConfig() *shared.WebhookConfig {
-	if o == nil {
+func (g *GetConfigResponse) GetWebhookConfig() *shared.WebhookConfig {
+	if g == nil {
 		return nil
 	}
-	return o.WebhookConfig
+	return g.WebhookConfig
 }

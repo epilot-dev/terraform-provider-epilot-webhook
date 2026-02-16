@@ -16,25 +16,25 @@ type TriggerWebhookRequest struct {
 	Sync *bool `queryParam:"style=form,explode=true,name=sync"`
 }
 
-func (o *TriggerWebhookRequest) GetExecutionPayload() shared.ExecutionPayload {
-	if o == nil {
+func (t *TriggerWebhookRequest) GetExecutionPayload() shared.ExecutionPayload {
+	if t == nil {
 		return shared.ExecutionPayload{}
 	}
-	return o.ExecutionPayload
+	return t.ExecutionPayload
 }
 
-func (o *TriggerWebhookRequest) GetConfigID() string {
-	if o == nil {
+func (t *TriggerWebhookRequest) GetConfigID() string {
+	if t == nil {
 		return ""
 	}
-	return o.ConfigID
+	return t.ConfigID
 }
 
-func (o *TriggerWebhookRequest) GetSync() *bool {
-	if o == nil {
+func (t *TriggerWebhookRequest) GetSync() *bool {
+	if t == nil {
 		return nil
 	}
-	return o.Sync
+	return t.Sync
 }
 
 type TriggerWebhookResponse struct {
@@ -50,37 +50,37 @@ type TriggerWebhookResponse struct {
 	TriggerWebhookResp *shared.TriggerWebhookResp
 }
 
-func (o *TriggerWebhookResponse) GetContentType() string {
-	if o == nil {
+func (t *TriggerWebhookResponse) GetContentType() string {
+	if t == nil {
 		return ""
 	}
-	return o.ContentType
+	return t.ContentType
 }
 
-func (o *TriggerWebhookResponse) GetErrorResp() *shared.ErrorResp {
-	if o == nil {
+func (t *TriggerWebhookResponse) GetErrorResp() *shared.ErrorResp {
+	if t == nil {
 		return nil
 	}
-	return o.ErrorResp
+	return t.ErrorResp
 }
 
-func (o *TriggerWebhookResponse) GetStatusCode() int {
-	if o == nil {
+func (t *TriggerWebhookResponse) GetStatusCode() int {
+	if t == nil {
 		return 0
 	}
-	return o.StatusCode
+	return t.StatusCode
 }
 
-func (o *TriggerWebhookResponse) GetRawResponse() *http.Response {
-	if o == nil {
+func (t *TriggerWebhookResponse) GetRawResponse() *http.Response {
+	if t == nil {
 		return nil
 	}
-	return o.RawResponse
+	return t.RawResponse
 }
 
-func (o *TriggerWebhookResponse) GetTriggerWebhookResp() *shared.TriggerWebhookResp {
-	if o == nil {
+func (t *TriggerWebhookResponse) GetTriggerWebhookResp() *shared.TriggerWebhookResp {
+	if t == nil {
 		return nil
 	}
-	return o.TriggerWebhookResp
+	return t.TriggerWebhookResp
 }

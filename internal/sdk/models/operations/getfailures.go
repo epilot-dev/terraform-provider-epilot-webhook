@@ -14,18 +14,18 @@ type GetFailuresRequest struct {
 	LastLoadedTimestamp *string `queryParam:"style=form,explode=true,name=lastLoadedTimestamp"`
 }
 
-func (o *GetFailuresRequest) GetLastLoadedEventID() *string {
-	if o == nil {
+func (g *GetFailuresRequest) GetLastLoadedEventID() *string {
+	if g == nil {
 		return nil
 	}
-	return o.LastLoadedEventID
+	return g.LastLoadedEventID
 }
 
-func (o *GetFailuresRequest) GetLastLoadedTimestamp() *string {
-	if o == nil {
+func (g *GetFailuresRequest) GetLastLoadedTimestamp() *string {
+	if g == nil {
 		return nil
 	}
-	return o.LastLoadedTimestamp
+	return g.LastLoadedTimestamp
 }
 
 type GetFailuresResponse struct {
@@ -41,37 +41,37 @@ type GetFailuresResponse struct {
 	RawResponse *http.Response
 }
 
-func (o *GetFailuresResponse) GetContentType() string {
-	if o == nil {
+func (g *GetFailuresResponse) GetContentType() string {
+	if g == nil {
 		return ""
 	}
-	return o.ContentType
+	return g.ContentType
 }
 
-func (o *GetFailuresResponse) GetErrorResp() *shared.ErrorResp {
-	if o == nil {
+func (g *GetFailuresResponse) GetErrorResp() *shared.ErrorResp {
+	if g == nil {
 		return nil
 	}
-	return o.ErrorResp
+	return g.ErrorResp
 }
 
-func (o *GetFailuresResponse) GetFailuresResp() *shared.FailuresResp {
-	if o == nil {
+func (g *GetFailuresResponse) GetFailuresResp() *shared.FailuresResp {
+	if g == nil {
 		return nil
 	}
-	return o.FailuresResp
+	return g.FailuresResp
 }
 
-func (o *GetFailuresResponse) GetStatusCode() int {
-	if o == nil {
+func (g *GetFailuresResponse) GetStatusCode() int {
+	if g == nil {
 		return 0
 	}
-	return o.StatusCode
+	return g.StatusCode
 }
 
-func (o *GetFailuresResponse) GetRawResponse() *http.Response {
-	if o == nil {
+func (g *GetFailuresResponse) GetRawResponse() *http.Response {
+	if g == nil {
 		return nil
 	}
-	return o.RawResponse
+	return g.RawResponse
 }
