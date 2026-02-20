@@ -12,11 +12,11 @@ type GetConfigsRequest struct {
 	EventName *string `queryParam:"style=form,explode=true,name=eventName"`
 }
 
-func (o *GetConfigsRequest) GetEventName() *string {
-	if o == nil {
+func (g *GetConfigsRequest) GetEventName() *string {
+	if g == nil {
 		return nil
 	}
-	return o.EventName
+	return g.EventName
 }
 
 type GetConfigsResponse struct {
@@ -32,37 +32,37 @@ type GetConfigsResponse struct {
 	Classes []shared.WebhookConfig
 }
 
-func (o *GetConfigsResponse) GetContentType() string {
-	if o == nil {
+func (g *GetConfigsResponse) GetContentType() string {
+	if g == nil {
 		return ""
 	}
-	return o.ContentType
+	return g.ContentType
 }
 
-func (o *GetConfigsResponse) GetErrorResp() *shared.ErrorResp {
-	if o == nil {
+func (g *GetConfigsResponse) GetErrorResp() *shared.ErrorResp {
+	if g == nil {
 		return nil
 	}
-	return o.ErrorResp
+	return g.ErrorResp
 }
 
-func (o *GetConfigsResponse) GetStatusCode() int {
-	if o == nil {
+func (g *GetConfigsResponse) GetStatusCode() int {
+	if g == nil {
 		return 0
 	}
-	return o.StatusCode
+	return g.StatusCode
 }
 
-func (o *GetConfigsResponse) GetRawResponse() *http.Response {
-	if o == nil {
+func (g *GetConfigsResponse) GetRawResponse() *http.Response {
+	if g == nil {
 		return nil
 	}
-	return o.RawResponse
+	return g.RawResponse
 }
 
-func (o *GetConfigsResponse) GetClasses() []shared.WebhookConfig {
-	if o == nil {
+func (g *GetConfigsResponse) GetClasses() []shared.WebhookConfig {
+	if g == nil {
 		return nil
 	}
-	return o.Classes
+	return g.Classes
 }

@@ -3,14 +3,19 @@
 package provider
 
 import (
+	"context"
 	tfTypes "github.com/epilot-dev/terraform-provider-epilot-webhook/internal/provider/types"
+	"github.com/epilot-dev/terraform-provider-epilot-webhook/internal/sdk/models/operations"
 	"github.com/epilot-dev/terraform-provider-epilot-webhook/internal/sdk/models/shared"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-func (r *WebhookDataSourceModel) RefreshFromSharedWebhookConfig(resp *shared.WebhookConfig) {
+func (r *WebhookDataSourceModel) RefreshFromSharedWebhookConfig(ctx context.Context, resp *shared.WebhookConfig) diag.Diagnostics {
+	var diags diag.Diagnostics
+
 	if resp != nil {
-		r.Manifest = []types.String{}
+		r.Manifest = make([]types.String, 0, len(resp.Manifest))
 		for _, v := range resp.Manifest {
 			r.Manifest = append(r.Manifest, types.StringValue(v))
 		}
@@ -40,21 +45,15 @@ func (r *WebhookDataSourceModel) RefreshFromSharedWebhookConfig(resp *shared.Web
 				r.Auth.OauthConfig.ClientID = types.StringValue(resp.Auth.OauthConfig.ClientID)
 				r.Auth.OauthConfig.ClientSecret = types.StringPointerValue(resp.Auth.OauthConfig.ClientSecret)
 				r.Auth.OauthConfig.CustomParameterList = []tfTypes.CustomOAuthParameter{}
-				if len(r.Auth.OauthConfig.CustomParameterList) > len(resp.Auth.OauthConfig.CustomParameterList) {
-					r.Auth.OauthConfig.CustomParameterList = r.Auth.OauthConfig.CustomParameterList[:len(resp.Auth.OauthConfig.CustomParameterList)]
-				}
-				for customParameterListCount, customParameterListItem := range resp.Auth.OauthConfig.CustomParameterList {
-					var customParameterList1 tfTypes.CustomOAuthParameter
-					customParameterList1.Key = types.StringValue(customParameterListItem.Key)
-					customParameterList1.Type = types.StringValue(string(customParameterListItem.Type))
-					customParameterList1.Value = types.StringValue(customParameterListItem.Value)
-					if customParameterListCount+1 > len(r.Auth.OauthConfig.CustomParameterList) {
-						r.Auth.OauthConfig.CustomParameterList = append(r.Auth.OauthConfig.CustomParameterList, customParameterList1)
-					} else {
-						r.Auth.OauthConfig.CustomParameterList[customParameterListCount].Key = customParameterList1.Key
-						r.Auth.OauthConfig.CustomParameterList[customParameterListCount].Type = customParameterList1.Type
-						r.Auth.OauthConfig.CustomParameterList[customParameterListCount].Value = customParameterList1.Value
-					}
+
+				for _, customParameterListItem := range resp.Auth.OauthConfig.CustomParameterList {
+					var customParameterList tfTypes.CustomOAuthParameter
+
+					customParameterList.Key = types.StringValue(customParameterListItem.Key)
+					customParameterList.Type = types.StringValue(string(customParameterListItem.Type))
+					customParameterList.Value = types.StringValue(customParameterListItem.Value)
+
+					r.Auth.OauthConfig.CustomParameterList = append(r.Auth.OauthConfig.CustomParameterList, customParameterList)
 				}
 				r.Auth.OauthConfig.Endpoint = types.StringValue(resp.Auth.OauthConfig.Endpoint)
 				r.Auth.OauthConfig.HTTPMethod = types.StringValue(string(resp.Auth.OauthConfig.HTTPMethod))
@@ -69,7 +68,7 @@ func (r *WebhookDataSourceModel) RefreshFromSharedWebhookConfig(resp *shared.Web
 		} else {
 			r.Filter = &tfTypes.Filter{}
 			r.Filter.KeyToFilter = types.StringValue(resp.Filter.KeyToFilter)
-			r.Filter.SupportedValues = []types.String{}
+			r.Filter.SupportedValues = make([]types.String, 0, len(resp.Filter.SupportedValues))
 			for _, v := range resp.Filter.SupportedValues {
 				r.Filter.SupportedValues = append(r.Filter.SupportedValues, types.StringValue(v))
 			}
@@ -87,9 +86,9 @@ func (r *WebhookDataSourceModel) RefreshFromSharedWebhookConfig(resp *shared.Web
 		} else {
 			r.PayloadConfiguration = &tfTypes.PayloadConfiguration{}
 			if len(resp.PayloadConfiguration.CustomHeaders) > 0 {
-				r.PayloadConfiguration.CustomHeaders = make(map[string]types.String)
-				for key1, value1 := range resp.PayloadConfiguration.CustomHeaders {
-					r.PayloadConfiguration.CustomHeaders[key1] = types.StringValue(value1)
+				r.PayloadConfiguration.CustomHeaders = make(map[string]types.String, len(resp.PayloadConfiguration.CustomHeaders))
+				for key, value := range resp.PayloadConfiguration.CustomHeaders {
+					r.PayloadConfiguration.CustomHeaders[key] = types.StringValue(value)
 				}
 			}
 			r.PayloadConfiguration.HydrateEntity = types.BoolPointerValue(resp.PayloadConfiguration.HydrateEntity)
@@ -104,4 +103,19 @@ func (r *WebhookDataSourceModel) RefreshFromSharedWebhookConfig(resp *shared.Web
 		}
 		r.URL = types.StringPointerValue(resp.URL)
 	}
+
+	return diags
+}
+
+func (r *WebhookDataSourceModel) ToOperationsGetConfigRequest(ctx context.Context) (*operations.GetConfigRequest, diag.Diagnostics) {
+	var diags diag.Diagnostics
+
+	var configID string
+	configID = r.ID.ValueString()
+
+	out := operations.GetConfigRequest{
+		ConfigID: configID,
+	}
+
+	return &out, diags
 }

@@ -27,65 +27,65 @@ type FailureEntry struct {
 	WebhookConfigID *string `json:"webhookConfigId,omitempty"`
 }
 
-func (o *FailureEntry) GetCreationTimestamp() *string {
-	if o == nil {
+func (f *FailureEntry) GetCreationTimestamp() *string {
+	if f == nil {
 		return nil
 	}
-	return o.CreationTimestamp
+	return f.CreationTimestamp
 }
 
-func (o *FailureEntry) GetErrorCode() *string {
-	if o == nil {
+func (f *FailureEntry) GetErrorCode() *string {
+	if f == nil {
 		return nil
 	}
-	return o.ErrorCode
+	return f.ErrorCode
 }
 
-func (o *FailureEntry) GetErrorPayload() *string {
-	if o == nil {
+func (f *FailureEntry) GetErrorPayload() *string {
+	if f == nil {
 		return nil
 	}
-	return o.ErrorPayload
+	return f.ErrorPayload
 }
 
-func (o *FailureEntry) GetEventID() *string {
-	if o == nil {
+func (f *FailureEntry) GetEventID() *string {
+	if f == nil {
 		return nil
 	}
-	return o.EventID
+	return f.EventID
 }
 
-func (o *FailureEntry) GetEventName() *string {
-	if o == nil {
+func (f *FailureEntry) GetEventName() *string {
+	if f == nil {
 		return nil
 	}
-	return o.EventName
+	return f.EventName
 }
 
-func (o *FailureEntry) GetOrgID() *string {
-	if o == nil {
+func (f *FailureEntry) GetOrgID() *string {
+	if f == nil {
 		return nil
 	}
-	return o.OrgID
+	return f.OrgID
 }
 
-func (o *FailureEntry) GetPayload() *Payload {
-	if o == nil {
+func (f *FailureEntry) GetPayload() *Payload {
+	if f == nil {
 		return nil
 	}
-	return o.Payload
+	return f.Payload
 }
 
-func (o *FailureEntry) GetURL() *string {
-	if o == nil {
+func (f *FailureEntry) GetURL() *string {
+	if f == nil {
 		return nil
 	}
-	return o.URL
+	return f.URL
 }
 
-func (o *FailureEntry) GetWebhookConfigID() *string {
-	if o == nil {
+func (f *FailureEntry) GetWebhookConfigID() *string {
+	if f == nil {
 		return nil
 	}
-	return o.WebhookConfigID
+	return f.WebhookConfigID
 }
