@@ -13,6 +13,7 @@ const (
 	AuthTypeBasic                  AuthType = "BASIC"
 	AuthTypeOauthClientCredentials AuthType = "OAUTH_CLIENT_CREDENTIALS"
 	AuthTypeAPIKey                 AuthType = "API_KEY"
+	AuthTypeNone                   AuthType = "NONE"
 )
 
 func (e AuthType) ToPointer() *AuthType {
@@ -29,6 +30,8 @@ func (e *AuthType) UnmarshalJSON(data []byte) error {
 	case "OAUTH_CLIENT_CREDENTIALS":
 		fallthrough
 	case "API_KEY":
+		fallthrough
+	case "NONE":
 		*e = AuthType(v)
 		return nil
 	default:

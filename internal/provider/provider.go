@@ -46,7 +46,7 @@ func (p *EpilotWebhookProvider) Schema(ctx context.Context, req provider.SchemaR
 		Attributes: map[string]schema.Attribute{
 			"epilot_auth": schema.StringAttribute{
 				MarkdownDescription: `Authorization header with epilot OAuth2 bearer token.`,
-				Required:            true,
+				Optional:            true,
 				Sensitive:           true,
 			},
 			"server_url": schema.StringAttribute{
@@ -76,14 +76,7 @@ func (p *EpilotWebhookProvider) Configure(ctx context.Context, req provider.Conf
 	security := shared.Security{}
 
 	if !data.EpilotAuth.IsUnknown() {
-		security.EpilotAuth = data.EpilotAuth.ValueString()
-	}
-
-	if security.EpilotAuth == "" {
-		resp.Diagnostics.AddError(
-			"Missing Provider Security Configuration",
-			"Provider configuration epilot_auth attribute must be configured.",
-		)
+		security.EpilotAuth = data.EpilotAuth.ValueStringPointer()
 	}
 
 	providerHTTPTransportOpts := ProviderHTTPTransportOpts{
@@ -117,15 +110,11 @@ func (p *EpilotWebhookProvider) Actions(_ context.Context) []func() action.Actio
 }
 
 func (p *EpilotWebhookProvider) Resources(ctx context.Context) []func() resource.Resource {
-	return []func() resource.Resource{
-		NewWebhookResource,
-	}
+	return []func() resource.Resource{}
 }
 
 func (p *EpilotWebhookProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
-	return []func() datasource.DataSource{
-		NewWebhookDataSource,
-	}
+	return []func() datasource.DataSource{}
 }
 
 func (p *EpilotWebhookProvider) EphemeralResources(ctx context.Context) []func() ephemeral.EphemeralResource {

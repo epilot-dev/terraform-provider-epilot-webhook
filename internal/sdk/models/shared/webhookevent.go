@@ -80,6 +80,7 @@ const (
 	WebhookEventStatusSucceeded  WebhookEventStatus = "succeeded"
 	WebhookEventStatusFailed     WebhookEventStatus = "failed"
 	WebhookEventStatusInProgress WebhookEventStatus = "in_progress"
+	WebhookEventStatusSkipped    WebhookEventStatus = "skipped"
 )
 
 func (e WebhookEventStatus) ToPointer() *WebhookEventStatus {
@@ -96,6 +97,8 @@ func (e *WebhookEventStatus) UnmarshalJSON(data []byte) error {
 	case "failed":
 		fallthrough
 	case "in_progress":
+		fallthrough
+	case "skipped":
 		*e = WebhookEventStatus(v)
 		return nil
 	default:

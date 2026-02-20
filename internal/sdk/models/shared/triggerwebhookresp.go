@@ -10,17 +10,17 @@ import (
 type Body struct {
 }
 
-type Status string
+type TriggerWebhookRespStatus string
 
 const (
-	StatusSucceeded Status = "succeeded"
-	StatusFailed    Status = "failed"
+	TriggerWebhookRespStatusSucceeded TriggerWebhookRespStatus = "succeeded"
+	TriggerWebhookRespStatusFailed    TriggerWebhookRespStatus = "failed"
 )
 
-func (e Status) ToPointer() *Status {
+func (e TriggerWebhookRespStatus) ToPointer() *TriggerWebhookRespStatus {
 	return &e
 }
-func (e *Status) UnmarshalJSON(data []byte) error {
+func (e *TriggerWebhookRespStatus) UnmarshalJSON(data []byte) error {
 	var v string
 	if err := json.Unmarshal(data, &v); err != nil {
 		return err
@@ -29,22 +29,22 @@ func (e *Status) UnmarshalJSON(data []byte) error {
 	case "succeeded":
 		fallthrough
 	case "failed":
-		*e = Status(v)
+		*e = TriggerWebhookRespStatus(v)
 		return nil
 	default:
-		return fmt.Errorf("invalid value for Status: %v", v)
+		return fmt.Errorf("invalid value for TriggerWebhookRespStatus: %v", v)
 	}
 }
 
 type TriggerWebhookResp struct {
-	Body       *Body   `json:"body,omitempty"`
-	Code       *string `json:"code,omitempty"`
-	EndDate    *string `json:"end_date,omitempty"`
-	EventID    *string `json:"event_id,omitempty"`
-	Message    *string `json:"message,omitempty"`
-	StartDate  *string `json:"start_date,omitempty"`
-	Status     *Status `json:"status,omitempty"`
-	StatusCode *string `json:"status_code,omitempty"`
+	Body       *Body                     `json:"body,omitempty"`
+	Code       *string                   `json:"code,omitempty"`
+	EndDate    *string                   `json:"end_date,omitempty"`
+	EventID    string                    `json:"event_id"`
+	Message    *string                   `json:"message,omitempty"`
+	StartDate  *string                   `json:"start_date,omitempty"`
+	Status     *TriggerWebhookRespStatus `json:"status,omitempty"`
+	StatusCode *string                   `json:"status_code,omitempty"`
 }
 
 func (t *TriggerWebhookResp) GetBody() *Body {
@@ -68,9 +68,9 @@ func (t *TriggerWebhookResp) GetEndDate() *string {
 	return t.EndDate
 }
 
-func (t *TriggerWebhookResp) GetEventID() *string {
+func (t *TriggerWebhookResp) GetEventID() string {
 	if t == nil {
-		return nil
+		return ""
 	}
 	return t.EventID
 }
@@ -89,7 +89,7 @@ func (t *TriggerWebhookResp) GetStartDate() *string {
 	return t.StartDate
 }
 
-func (t *TriggerWebhookResp) GetStatus() *Status {
+func (t *TriggerWebhookResp) GetStatus() *TriggerWebhookRespStatus {
 	if t == nil {
 		return nil
 	}

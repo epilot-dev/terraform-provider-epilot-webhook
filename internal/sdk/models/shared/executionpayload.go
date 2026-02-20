@@ -2,10 +2,33 @@
 
 package shared
 
+import (
+	"github.com/epilot-dev/terraform-provider-epilot-webhook/internal/sdk/internal/utils"
+)
+
 // ExecutionPayload - Payload for triggering a webhook
 type ExecutionPayload struct {
+	AdditionalProperties any `additionalProperties:"true" json:"-"`
 	// Contains the metadata about the configured event
 	Metadata Metadata `json:"metadata"`
+}
+
+func (e ExecutionPayload) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(e, "", false)
+}
+
+func (e *ExecutionPayload) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &e, "", false, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (e *ExecutionPayload) GetAdditionalProperties() any {
+	if e == nil {
+		return nil
+	}
+	return e.AdditionalProperties
 }
 
 func (e *ExecutionPayload) GetMetadata() Metadata {

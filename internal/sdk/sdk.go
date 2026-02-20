@@ -2,7 +2,7 @@
 
 package sdk
 
-// Generated from OpenAPI doc version 1.0.0 and generator version 2.832.9
+// Generated from OpenAPI doc version 1.0.0 and generator version 2.832.2
 
 import (
 	"context"
@@ -18,7 +18,6 @@ import (
 
 // ServerList contains the list of servers available to the SDK
 var ServerList = []string{
-	"https://webhooks.sls.epilot.io",
 	"https://webhooks.sls.epilot.io",
 }
 
@@ -55,7 +54,9 @@ type SDK struct {
 	Webhooks *Webhooks
 	Events   *Events
 	Event    *Event
-	Trigger  *Trigger
+	// Generate example payloads for webhooks
+	Example *Example
+	Trigger *Trigger
 
 	sdkConfiguration config.SDKConfiguration
 	hooks            *hooks.Hooks
@@ -131,9 +132,9 @@ func WithTimeout(timeout time.Duration) SDKOption {
 // New creates a new instance of the SDK with the provided options
 func New(opts ...SDKOption) *SDK {
 	sdk := &SDK{
-		SDKVersion: "0.7.0",
+		SDKVersion: "0.8.0",
 		sdkConfiguration: config.SDKConfiguration{
-			UserAgent:  "speakeasy-sdk/terraform 0.7.0 2.832.9 1.0.0 github.com/epilot-dev/terraform-provider-epilot-webhook/internal/sdk",
+			UserAgent:  "speakeasy-sdk/terraform 0.8.0 2.832.2 1.0.0 github.com/epilot-dev/terraform-provider-epilot-webhook/internal/sdk",
 			ServerList: ServerList,
 		},
 		hooks: hooks.New(),
@@ -157,6 +158,7 @@ func New(opts ...SDKOption) *SDK {
 	sdk.Webhooks = newWebhooks(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Events = newEvents(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Event = newEvent(sdk, sdk.sdkConfiguration, sdk.hooks)
+	sdk.Example = newExample(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Trigger = newTrigger(sdk, sdk.sdkConfiguration, sdk.hooks)
 
 	return sdk

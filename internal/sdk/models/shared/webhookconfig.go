@@ -37,24 +37,32 @@ func (e *WebhookConfigStatus) UnmarshalJSON(data []byte) error {
 }
 
 type WebhookConfig struct {
-	// Manifest ID used to create/update the entity
+	// Manifest ID used to create/update the webhook resource
 	Manifest []string `json:"_manifest,omitempty"`
 	Auth     *Auth    `json:"auth,omitempty"`
 	// creation timestamp
-	CreationTime   *string     `json:"creationTime,omitempty"`
-	EnableStaticIP *bool       `json:"enableStaticIP,omitempty"`
-	Enabled        *bool       `json:"enabled,omitempty"`
-	EventName      string      `json:"eventName"`
-	Filter         *Filter     `json:"filter,omitempty"`
-	HTTPMethod     *HTTPMethod `json:"httpMethod,omitempty"`
-	ID             *string     `json:"id,omitempty"`
+	CreationTime   *string `json:"creationTime,omitempty"`
+	EnableStaticIP *bool   `json:"enableStaticIP,omitempty"`
+	Enabled        *bool   `json:"enabled,omitempty"`
+	EventName      string  `json:"eventName"`
+	Filter         *Filter `json:"filter,omitempty"`
+	// A group of conditions with a logical operator. Multiple conditions are AND-ed by default.
+	FilterConditions *WebhookConditionGroup `json:"filterConditions,omitempty"`
+	HTTPMethod       *HTTPMethod            `json:"httpMethod,omitempty"`
+	ID               *string                `json:"id,omitempty"`
 	// JSONata expression to transform the payload
 	JsonataExpression *string `json:"jsonataExpression,omitempty"`
 	Name              string  `json:"name"`
 	// Configuration for the webhook payload
 	PayloadConfiguration *PayloadConfiguration `json:"payloadConfiguration,omitempty"`
-	Status               *WebhookConfigStatus  `json:"status,omitempty"`
-	URL                  *string               `json:"url,omitempty"`
+	// Per-webhook signing secret following the Standard Webhooks specification.
+	// Only returned once during webhook creation. Use this secret to verify
+	// webhook signatures using the `webhook-id`, `webhook-timestamp`, and
+	// `webhook-signature` headers.
+	//
+	SigningSecret *string              `json:"signingSecret,omitempty"`
+	Status        *WebhookConfigStatus `json:"status,omitempty"`
+	URL           *string              `json:"url,omitempty"`
 }
 
 func (w *WebhookConfig) GetManifest() []string {
@@ -106,6 +114,13 @@ func (w *WebhookConfig) GetFilter() *Filter {
 	return w.Filter
 }
 
+func (w *WebhookConfig) GetFilterConditions() *WebhookConditionGroup {
+	if w == nil {
+		return nil
+	}
+	return w.FilterConditions
+}
+
 func (w *WebhookConfig) GetHTTPMethod() *HTTPMethod {
 	if w == nil {
 		return nil
@@ -141,6 +156,13 @@ func (w *WebhookConfig) GetPayloadConfiguration() *PayloadConfiguration {
 	return w.PayloadConfiguration
 }
 
+func (w *WebhookConfig) GetSigningSecret() *string {
+	if w == nil {
+		return nil
+	}
+	return w.SigningSecret
+}
+
 func (w *WebhookConfig) GetStatus() *WebhookConfigStatus {
 	if w == nil {
 		return nil
@@ -156,16 +178,18 @@ func (w *WebhookConfig) GetURL() *string {
 }
 
 type WebhookConfigInput struct {
-	// Manifest ID used to create/update the entity
+	// Manifest ID used to create/update the webhook resource
 	Manifest []string `json:"_manifest,omitempty"`
 	Auth     *Auth    `json:"auth,omitempty"`
 	// creation timestamp
-	CreationTime   *string     `json:"creationTime,omitempty"`
-	EnableStaticIP *bool       `json:"enableStaticIP,omitempty"`
-	Enabled        *bool       `json:"enabled,omitempty"`
-	EventName      string      `json:"eventName"`
-	Filter         *Filter     `json:"filter,omitempty"`
-	HTTPMethod     *HTTPMethod `json:"httpMethod,omitempty"`
+	CreationTime   *string `json:"creationTime,omitempty"`
+	EnableStaticIP *bool   `json:"enableStaticIP,omitempty"`
+	Enabled        *bool   `json:"enabled,omitempty"`
+	EventName      string  `json:"eventName"`
+	Filter         *Filter `json:"filter,omitempty"`
+	// A group of conditions with a logical operator. Multiple conditions are AND-ed by default.
+	FilterConditions *WebhookConditionGroup `json:"filterConditions,omitempty"`
+	HTTPMethod       *HTTPMethod            `json:"httpMethod,omitempty"`
 	// JSONata expression to transform the payload
 	JsonataExpression *string `json:"jsonataExpression,omitempty"`
 	Name              string  `json:"name"`
@@ -222,6 +246,13 @@ func (w *WebhookConfigInput) GetFilter() *Filter {
 		return nil
 	}
 	return w.Filter
+}
+
+func (w *WebhookConfigInput) GetFilterConditions() *WebhookConditionGroup {
+	if w == nil {
+		return nil
+	}
+	return w.FilterConditions
 }
 
 func (w *WebhookConfigInput) GetHTTPMethod() *HTTPMethod {

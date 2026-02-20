@@ -15,23 +15,24 @@ import (
 	"net/http"
 )
 
-type Trigger struct {
+// Example - Generate example payloads for webhooks
+type Example struct {
 	rootSDK          *SDK
 	sdkConfiguration config.SDKConfiguration
 	hooks            *hooks.Hooks
 }
 
-func newTrigger(rootSDK *SDK, sdkConfig config.SDKConfiguration, hooks *hooks.Hooks) *Trigger {
-	return &Trigger{
+func newExample(rootSDK *SDK, sdkConfig config.SDKConfiguration, hooks *hooks.Hooks) *Example {
+	return &Example{
 		rootSDK:          rootSDK,
 		sdkConfiguration: sdkConfig,
 		hooks:            hooks,
 	}
 }
 
-// TriggerWebhook - triggers a webhook event either async or sync
-// Trigger a webhook
-func (s *Trigger) TriggerWebhook(ctx context.Context, request operations.TriggerWebhookRequest, opts ...operations.Option) (*operations.TriggerWebhookResponse, error) {
+// GetWebhookExample - getWebhookExample
+// Generate an example payload for a webhook configuration based on trigger type
+func (s *Example) GetWebhookExample(ctx context.Context, request operations.GetWebhookExampleRequest, opts ...operations.Option) (*operations.GetWebhookExampleResponse, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
 		operations.SupportedOptionTimeout,
@@ -49,7 +50,7 @@ func (s *Trigger) TriggerWebhook(ctx context.Context, request operations.Trigger
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/webhooks/configs/{configId}/trigger", request, nil)
+	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/webhooks/configs/{configId}/example", request, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -59,11 +60,11 @@ func (s *Trigger) TriggerWebhook(ctx context.Context, request operations.Trigger
 		SDKConfiguration: s.sdkConfiguration,
 		BaseURL:          baseURL,
 		Context:          ctx,
-		OperationID:      "triggerWebhook",
+		OperationID:      "getWebhookExample",
 		OAuth2Scopes:     nil,
 		SecuritySource:   s.sdkConfiguration.Security,
 	}
-	bodyReader, reqContentType, err := utils.SerializeRequestBody(ctx, request, false, false, "ExecutionPayload", "json", `request:"mediaType=application/json"`)
+	bodyReader, reqContentType, err := utils.SerializeRequestBody(ctx, request, false, false, "ExampleRequest", "json", `request:"mediaType=application/json"`)
 	if err != nil {
 		return nil, err
 	}
@@ -87,10 +88,6 @@ func (s *Trigger) TriggerWebhook(ctx context.Context, request operations.Trigger
 	req.Header.Set("User-Agent", s.sdkConfiguration.UserAgent)
 	if reqContentType != "" {
 		req.Header.Set("Content-Type", reqContentType)
-	}
-
-	if err := utils.PopulateQueryParams(ctx, req, request, nil, nil); err != nil {
-		return nil, fmt.Errorf("error populating query params: %w", err)
 	}
 
 	if err := utils.PopulateSecurity(ctx, req, s.sdkConfiguration.Security); err != nil {
@@ -130,7 +127,7 @@ func (s *Trigger) TriggerWebhook(ctx context.Context, request operations.Trigger
 		}
 	}
 
-	res := &operations.TriggerWebhookResponse{
+	res := &operations.GetWebhookExampleResponse{
 		StatusCode:  httpRes.StatusCode,
 		ContentType: httpRes.Header.Get("Content-Type"),
 		RawResponse: httpRes,
@@ -145,12 +142,12 @@ func (s *Trigger) TriggerWebhook(ctx context.Context, request operations.Trigger
 				return nil, err
 			}
 
-			var out shared.TriggerWebhookResp
+			var out shared.ExampleResponse
 			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
 
-			res.TriggerWebhookResp = &out
+			res.ExampleResponse = &out
 		default:
 			rawBody, err := utils.ConsumeRawBody(httpRes)
 			if err != nil {
@@ -159,6 +156,8 @@ func (s *Trigger) TriggerWebhook(ctx context.Context, request operations.Trigger
 			return nil, errors.NewSDKError(fmt.Sprintf("unknown content-type received: %s", httpRes.Header.Get("Content-Type")), httpRes.StatusCode, string(rawBody), httpRes)
 		}
 	case httpRes.StatusCode == 400:
+		fallthrough
+	case httpRes.StatusCode == 404:
 		switch {
 		case utils.MatchContentType(httpRes.Header.Get("Content-Type"), `application/json`):
 			rawBody, err := utils.ConsumeRawBody(httpRes)

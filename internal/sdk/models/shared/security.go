@@ -3,12 +3,12 @@
 package shared
 
 type Security struct {
-	EpilotAuth string `security:"scheme,type=http,subtype=bearer,name=Authorization"`
+	EpilotAuth *string `security:"scheme,type=http,subtype=bearer,name=Authorization"`
 }
 
-func (s *Security) GetEpilotAuth() string {
+func (s *Security) GetEpilotAuth() *string {
 	if s == nil {
-		return ""
+		return nil
 	}
 	return s.EpilotAuth
 }
