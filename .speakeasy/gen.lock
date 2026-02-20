@@ -1,19 +1,19 @@
 lockVersion: 2.0.0
 id: 11c8545a-deb6-44f9-ba56-e71722af6a51
 management:
-  docChecksum: 9a51a2546f9d5cb1df586b803b2db138
+  docChecksum: e2bacca5e32c6ad786a7e9da28c4f977
   docVersion: 1.0.0
   speakeasyVersion: 1.722.2
   generationVersion: 2.832.2
-  releaseVersion: 0.8.0
-  configChecksum: 6fc5f2462677a1f8545dd244273d560b
+  releaseVersion: 0.9.0
+  configChecksum: 1563f91d29dc1f217559d26dbea40842
   repoURL: https://github.com/epilot-dev/terraform-provider-epilot-webhook.git
   repoSubDirectory: .
   published: true
 persistentEdits:
-  generation_id: 727e4be3-17e9-45d9-9f09-11c3dcd93a27
-  pristine_commit_hash: 01802717cb3833d56ac07089bffc69a55796cf29
-  pristine_tree_hash: 95fe559c72409eeb44bff84f055299dbf21e0862
+  generation_id: 1e99d16e-a97f-41ed-9e58-96ceb44fa2dd
+  pristine_commit_hash: 0e7b0ca4efff5a1482983d7d2fbe0c137d120cd5
+  pristine_tree_hash: 06922424a147e0f927b8c07a68883d68b53fa221
 features:
   terraform:
     additionalDependencies: 0.1.0
@@ -25,6 +25,7 @@ features:
     globalServerURLs: 2.83.1
     inputOutputModels: 2.83.0
     nullables: 0.0.0
+    retries: 2.81.4
 trackedFiles:
   .gitattributes:
     id: 24139dae6567
@@ -34,10 +35,26 @@ trackedFiles:
     id: 3aed33ce6e6f
     last_write_checksum: sha1:02c32c9430f37507b3eacd41cdc36f080809e92d
     pristine_git_object: 8e707bb129af1da185ba30b4c289b0160819c437
+  examples/data-sources/epilot-webhook_webhook/data-source.tf:
+    id: fb09682b5d6d
+    last_write_checksum: sha1:29f204643ff1340d467d146af2625e7910aadb2e
+    pristine_git_object: 980c4b7e425445998e23c47c19f6aac7d68806c5
   examples/provider/provider.tf:
     id: 954e955c0240
-    last_write_checksum: sha1:a7d2f1545c0de3139f43f0ff5f36ddaf5aaf61cf
-    pristine_git_object: 80d224abf275d9ccafa9d40515c2b09c92fa9aab
+    last_write_checksum: sha1:b09f91e4dd9b5693aaa8787989adaead7a4bf155
+    pristine_git_object: 5f9791b8bf0332e16175519287f07e3340eb51c2
+  examples/resources/epilot-webhook_webhook/import-by-string-id.tf:
+    id: 42129bfe05b6
+    last_write_checksum: sha1:70b364624c074456af3b8595609331fc30ccde65
+    pristine_git_object: 9a08c80b682dfd6319ad1b712f21ea0227251852
+  examples/resources/epilot-webhook_webhook/import.sh:
+    id: 2fe0dbd019af
+    last_write_checksum: sha1:7b3141200a56458956a14988cfe2bf10a7687ffc
+    pristine_git_object: bcf87bf51935763792325b04c20bcfafae5b45e8
+  examples/resources/epilot-webhook_webhook/resource.tf:
+    id: 603359f942a2
+    last_write_checksum: sha1:bec9e3d4adf9f5a3a358188e605393e46aba5d53
+    pristine_git_object: 392cd597651fa4b833a56838403d41ee2b79b076
   go.mod:
     id: c47645c391ad
     last_write_checksum: sha1:364a1defa6bc9ce363610af83e16c7ed04d7075b
@@ -184,8 +201,8 @@ trackedFiles:
     pristine_git_object: 0ea64fbeb1fd7709d7241a8e06d34bfe9d0323d3
   internal/provider/provider.go:
     id: 1e7e86841cf3
-    last_write_checksum: sha1:75c16223a797abc649c241ccd8d1f8c0b11a28a7
-    pristine_git_object: 9088363d09d04202193b30920a7e92b411b75a3a
+    last_write_checksum: sha1:84835a0e12724c9de07c8ebcd453a514c9bea380
+    pristine_git_object: b671e88ed9dce5c03d22d7774fb1eb56c64395cd
   internal/provider/reflect/diags.go:
     id: 35b6b44972e2
     last_write_checksum: sha1:ace8bc53054bb1d8ee8689acf3e4323de75a6297
@@ -254,26 +271,82 @@ trackedFiles:
     id: c44fcd78fccc
     last_write_checksum: sha1:c28123f17006dc96a233f916a17c38408e37b71f
     pristine_git_object: 54763e7a7555fae6d8bf51c4590220ff610202aa
+  internal/provider/types/api_key_config.go:
+    id: 36ff75e733bb
+    last_write_checksum: sha1:cc4dfeebf761f862d2bd911cc0e5d24a5dad8f19
+    pristine_git_object: ca1239d9f9548718848977b12a66cd9a887deb6e
+  internal/provider/types/auth.go:
+    id: 6c9303cd900a
+    last_write_checksum: sha1:f43bd73b5f65f0d17ef4346eb549d1a0e82f976b
+    pristine_git_object: 71318bfb4c2a744f472c1ac776263531763f0823
+  internal/provider/types/basic_auth_config.go:
+    id: 533f20f94e6f
+    last_write_checksum: sha1:85e539dda771ecfbdf4e01f8917f2af2df4892fd
+    pristine_git_object: 571e8fed72df699712f11386450faf8807e6226d
+  internal/provider/types/custom_o_auth_parameter.go:
+    id: de54a5675b66
+    last_write_checksum: sha1:90fd76cbeb92beac8d5e6b768f16375c711f8879
+    pristine_git_object: f0066fec860508738a538811431e5ff0b0dba99a
+  internal/provider/types/filter.go:
+    id: 87c2829258eb
+    last_write_checksum: sha1:8929672e832b1f8954e5d710f2e3d353c3083be5
+    pristine_git_object: 2be9e8fde817b9036c3f1dfb858b02fa9a1fbad5
+  internal/provider/types/o_auth_config.go:
+    id: ab7e1c0a4271
+    last_write_checksum: sha1:43aa72db4bb6fb6c7c77778dcb2ec6489cc4b4d2
+    pristine_git_object: 498d3b4fc4bc0667149b19c996d36f8ca4105ba8
+  internal/provider/types/payload_configuration.go:
+    id: c60f36a99464
+    last_write_checksum: sha1:2d10142967ef60b367673784d08fb31fde6a5ff3
+    pristine_git_object: d2b33dcc828563d1a182386b3be6557537f80b9c
+  internal/provider/types/webhook_condition.go:
+    id: 36aefa931d44
+    last_write_checksum: sha1:4c570999999efcd7e5d03a43f0249324a5255229
+    pristine_git_object: d4f286a78501a07514159745733dea4080ef9d82
+  internal/provider/types/webhook_condition_group.go:
+    id: db806fb93752
+    last_write_checksum: sha1:f73a50160e360f965c67e2f6ea8ebf20c24659bc
+    pristine_git_object: b9226cd647368089431027074df94e76d0b05070
   internal/provider/utils.go:
     id: 312d50f148af
     last_write_checksum: sha1:d036e6980180bd12e0c4977049e93a940dec5780
     pristine_git_object: f53bf626564f06ffc3497e3f4a31cc5e47c738aa
+  internal/provider/webhook_data_source.go:
+    id: 184cc3cd6cae
+    last_write_checksum: sha1:07fc09a3b6c4c792c3673ac10f927f765d0fed00
+    pristine_git_object: 3f3654ed870a3934069f99ae9b1cc692f9c67faf
+  internal/provider/webhook_data_source_sdk.go:
+    id: e8034f82adc4
+    last_write_checksum: sha1:991207fa35033b1ce67e980bd5f51f38cf093d10
+    pristine_git_object: cf82c55666c75a62d4fee2881aab401f2b2faf4e
+  internal/provider/webhook_resource.go:
+    id: 8b54b27cb9de
+    last_write_checksum: sha1:cae952c23af96af50d096088001a6b59224f1333
+    pristine_git_object: 3717d9c86bfab5200a6a31ebcd4170f8ad897585
+  internal/provider/webhook_resource_sdk.go:
+    id: 2a20d11e4dc9
+    last_write_checksum: sha1:3cb5678690b6c7d26b0071486762a3bb674c246d
+    pristine_git_object: 95dda9fbb5a29b47645dba244de01b8664fa2089
   internal/sdk/.gitattributes:
     id: 1ea4c4e0a39d
     last_write_checksum: sha1:84b0115789fc3ea52e31df701d8a27f76077e29f
     pristine_git_object: e6a994416d0f527912d2d272e2583458f4fc9bcb
+  internal/sdk/docs/models/operations/option.md:
+    id: a35737eb2e35
+    last_write_checksum: sha1:08cfee5d266c9d82987e448f6c98a143aa42c5f8
+    pristine_git_object: 35d8a1e2ad48a64702c6a654ac8880dabec053b0
   internal/sdk/event.go:
     id: 39d968e90a8e
-    last_write_checksum: sha1:d0fcec6616b30181906de6243285ef12431af2ed
-    pristine_git_object: 8a077a51940eeb5d56818067ced94b7733ea60a8
+    last_write_checksum: sha1:2036cc23cac26bab0b50ca1891b8f51f869af6ab
+    pristine_git_object: bc073822ad54db5ceda4f2ef9e5c7eb04c52c8e4
   internal/sdk/events.go:
     id: f57c428ba828
-    last_write_checksum: sha1:7069ef015553f758d127d879d9364a3a2ec097b8
-    pristine_git_object: bf337facc830ea9e5301d31b9a4a5f19c0c07eef
+    last_write_checksum: sha1:db438ebfc5333d879e562d3d98e38993873f1f1d
+    pristine_git_object: 0826b31b19d64fd9bd82f1fda8667dbfc76696fc
   internal/sdk/example.go:
     id: 2e87063b0263
-    last_write_checksum: sha1:c51e1bb1595651134e4b16ba056847b441d2a259
-    pristine_git_object: e7441b3ac5128123a6b481475bbc4e84f21ce8cd
+    last_write_checksum: sha1:07a8f56e0177f27d4ad7e067c4357dc794919d10
+    pristine_git_object: 289fbd3a26a0f97da1076bb1dcee0fd02dc088d6
   internal/sdk/internal/config/sdkconfiguration.go:
     id: 6af0bc8635d9
     last_write_checksum: sha1:c347b7a8627ef033c901cb56833680fe5cd08499
@@ -512,12 +585,12 @@ trackedFiles:
     pristine_git_object: aa809fccb3445b1e2530a979dad620512f50e70f
   internal/sdk/sdk.go:
     id: 02d7190ee502
-    last_write_checksum: sha1:f8bcf7c309501124c4f5deea8f878da8d5ed67a7
-    pristine_git_object: 03795fa7a4a4df4476100cd849f4e61e7a876f90
+    last_write_checksum: sha1:24ff7766f085afb27d5976a45dfd0fdf3cab5a4c
+    pristine_git_object: a97d0988707ea897c0a556318ec90b493eba2887
   internal/sdk/trigger.go:
     id: 8bbb8a8ac0b5
-    last_write_checksum: sha1:5ac3f0df2df2550096810c3edb2f9dc043015a91
-    pristine_git_object: 1f2b34a14f105327db00ce681746b48cbced234a
+    last_write_checksum: sha1:eda50cd49647be18e2cbf583e791b22a21d1d327
+    pristine_git_object: 1e870c1f67a302709db531a963b3ae29145b1044
   internal/sdk/types/bigint.go:
     id: fc530b70337e
     last_write_checksum: sha1:49b004005d0461fb04b846eca062b070b0360b31
@@ -536,8 +609,8 @@ trackedFiles:
     pristine_git_object: 35c439d2661e08fcb6a854096fd7b9a8561b3938
   internal/sdk/webhooks.go:
     id: 459d0815e45d
-    last_write_checksum: sha1:2fc4083ef385231894e1be10306a3d755c3a14b0
-    pristine_git_object: 3c6f029b3ba09b5aee8507e3658239bcd965e81c
+    last_write_checksum: sha1:e562d271a72ea80cd111cbd942b75813e6fb79ed
+    pristine_git_object: 851ab4242882d03f5ae0a4cf9cc737646761ca3f
   internal/validators/DateValidator.go:
     id: 4fdfa187ab97
     last_write_checksum: sha1:96b9bb97ae29e2bfcade798614b45ea543cc9ee1

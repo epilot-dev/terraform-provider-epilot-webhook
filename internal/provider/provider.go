@@ -110,11 +110,15 @@ func (p *EpilotWebhookProvider) Actions(_ context.Context) []func() action.Actio
 }
 
 func (p *EpilotWebhookProvider) Resources(ctx context.Context) []func() resource.Resource {
-	return []func() resource.Resource{}
+	return []func() resource.Resource{
+		NewWebhookResource,
+	}
 }
 
 func (p *EpilotWebhookProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
-	return []func() datasource.DataSource{}
+	return []func() datasource.DataSource{
+		NewWebhookDataSource,
+	}
 }
 
 func (p *EpilotWebhookProvider) EphemeralResources(ctx context.Context) []func() ephemeral.EphemeralResource {

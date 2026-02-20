@@ -19,6 +19,7 @@ import (
 // ServerList contains the list of servers available to the SDK
 var ServerList = []string{
 	"https://webhooks.sls.epilot.io",
+	"https://webhooks.sls.epilot.io",
 }
 
 // HTTPClient provides an interface for supplying the SDK with a custom HTTP client
@@ -132,9 +133,9 @@ func WithTimeout(timeout time.Duration) SDKOption {
 // New creates a new instance of the SDK with the provided options
 func New(opts ...SDKOption) *SDK {
 	sdk := &SDK{
-		SDKVersion: "0.8.0",
+		SDKVersion: "0.9.0",
 		sdkConfiguration: config.SDKConfiguration{
-			UserAgent:  "speakeasy-sdk/terraform 0.8.0 2.832.2 1.0.0 github.com/epilot-dev/terraform-provider-epilot-webhook/internal/sdk",
+			UserAgent:  "speakeasy-sdk/terraform 0.9.0 2.832.2 1.0.0 github.com/epilot-dev/terraform-provider-epilot-webhook/internal/sdk",
 			ServerList: ServerList,
 		},
 		hooks: hooks.New(),

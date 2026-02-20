@@ -59,7 +59,7 @@ terraform {
   required_providers {
     epilot-webhook = {
       source  = "epilot-dev/epilot-webhook"
-      version = "0.8.0"
+      version = "0.9.0"
     }
   }
 }
@@ -127,7 +127,13 @@ Available configuration:
 <!-- Start Available Resources and Data Sources [operations] -->
 ## Available Resources and Data Sources
 
+### Managed Resources
 
+* [epilot-webhook_webhook](docs/resources/webhook.md)
+
+### Data Sources
+
+* [epilot-webhook_webhook](docs/data-sources/webhook.md)
 <!-- End Available Resources and Data Sources [operations] -->
 
 <!-- Start Summary [summary] -->
