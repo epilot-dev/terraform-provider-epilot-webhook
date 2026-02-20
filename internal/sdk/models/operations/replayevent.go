@@ -14,18 +14,18 @@ type ReplayEventRequest struct {
 	EventID string `pathParam:"style=simple,explode=false,name=eventId"`
 }
 
-func (o *ReplayEventRequest) GetConfigID() string {
-	if o == nil {
+func (r *ReplayEventRequest) GetConfigID() string {
+	if r == nil {
 		return ""
 	}
-	return o.ConfigID
+	return r.ConfigID
 }
 
-func (o *ReplayEventRequest) GetEventID() string {
-	if o == nil {
+func (r *ReplayEventRequest) GetEventID() string {
+	if r == nil {
 		return ""
 	}
-	return o.EventID
+	return r.EventID
 }
 
 type ReplayEventResponse struct {
@@ -39,30 +39,30 @@ type ReplayEventResponse struct {
 	RawResponse *http.Response
 }
 
-func (o *ReplayEventResponse) GetContentType() string {
-	if o == nil {
+func (r *ReplayEventResponse) GetContentType() string {
+	if r == nil {
 		return ""
 	}
-	return o.ContentType
+	return r.ContentType
 }
 
-func (o *ReplayEventResponse) GetErrorResp() *shared.ErrorResp {
-	if o == nil {
+func (r *ReplayEventResponse) GetErrorResp() *shared.ErrorResp {
+	if r == nil {
 		return nil
 	}
-	return o.ErrorResp
+	return r.ErrorResp
 }
 
-func (o *ReplayEventResponse) GetStatusCode() int {
-	if o == nil {
+func (r *ReplayEventResponse) GetStatusCode() int {
+	if r == nil {
 		return 0
 	}
-	return o.StatusCode
+	return r.StatusCode
 }
 
-func (o *ReplayEventResponse) GetRawResponse() *http.Response {
-	if o == nil {
+func (r *ReplayEventResponse) GetRawResponse() *http.Response {
+	if r == nil {
 		return nil
 	}
-	return o.RawResponse
+	return r.RawResponse
 }

@@ -9,16 +9,16 @@ type FailuresResp struct {
 	LastLoadedKey *FailureLastKey `json:"lastLoadedKey,omitempty"`
 }
 
-func (o *FailuresResp) GetFailures() []FailureEntry {
-	if o == nil {
+func (f *FailuresResp) GetFailures() []FailureEntry {
+	if f == nil {
 		return []FailureEntry{}
 	}
-	return o.Failures
+	return f.Failures
 }
 
-func (o *FailuresResp) GetLastLoadedKey() *FailureLastKey {
-	if o == nil {
+func (f *FailuresResp) GetLastLoadedKey() *FailureLastKey {
+	if f == nil {
 		return nil
 	}
-	return o.LastLoadedKey
+	return f.LastLoadedKey
 }

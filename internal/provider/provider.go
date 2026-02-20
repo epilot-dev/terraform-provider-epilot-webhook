@@ -6,7 +6,11 @@ import (
 	"context"
 	"github.com/epilot-dev/terraform-provider-epilot-webhook/internal/sdk"
 	"github.com/epilot-dev/terraform-provider-epilot-webhook/internal/sdk/models/shared"
+	"github.com/hashicorp/terraform-plugin-framework/action"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
+	"github.com/hashicorp/terraform-plugin-framework/ephemeral"
+	"github.com/hashicorp/terraform-plugin-framework/function"
+	"github.com/hashicorp/terraform-plugin-framework/list"
 	"github.com/hashicorp/terraform-plugin-framework/provider"
 	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -14,7 +18,10 @@ import (
 	"net/http"
 )
 
-var _ provider.Provider = &EpilotWebhookProvider{}
+var _ provider.Provider = (*EpilotWebhookProvider)(nil)
+var _ provider.ProviderWithActions = (*EpilotWebhookProvider)(nil)
+var _ provider.ProviderWithEphemeralResources = (*EpilotWebhookProvider)(nil)
+var _ provider.ProviderWithFunctions = (*EpilotWebhookProvider)(nil)
 
 type EpilotWebhookProvider struct {
 	// version is set to the provider version on release, "dev" when the
@@ -25,8 +32,8 @@ type EpilotWebhookProvider struct {
 
 // EpilotWebhookProviderModel describes the provider data model.
 type EpilotWebhookProviderModel struct {
-	ServerURL  types.String `tfsdk:"server_url"`
 	EpilotAuth types.String `tfsdk:"epilot_auth"`
+	ServerURL  types.String `tfsdk:"server_url"`
 }
 
 func (p *EpilotWebhookProvider) Metadata(ctx context.Context, req provider.MetadataRequest, resp *provider.MetadataResponse) {
@@ -36,18 +43,18 @@ func (p *EpilotWebhookProvider) Metadata(ctx context.Context, req provider.Metad
 
 func (p *EpilotWebhookProvider) Schema(ctx context.Context, req provider.SchemaRequest, resp *provider.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: `Webhooks: Service for configuring webhooks on different events`,
 		Attributes: map[string]schema.Attribute{
-			"server_url": schema.StringAttribute{
-				MarkdownDescription: "Server URL (defaults to https://webhooks.sls.epilot.io)",
-				Optional:            true,
-				Required:            false,
-			},
 			"epilot_auth": schema.StringAttribute{
-				Sensitive: true,
-				Optional:  true,
+				MarkdownDescription: `Authorization header with epilot OAuth2 bearer token.`,
+				Required:            true,
+				Sensitive:           true,
+			},
+			"server_url": schema.StringAttribute{
+				Description: `Server URL (defaults to https://webhooks.sls.epilot.io)`,
+				Optional:    true,
 			},
 		},
+		MarkdownDescription: `Webhooks: Service for configuring webhooks on different events`,
 	}
 }
 
@@ -60,34 +67,53 @@ func (p *EpilotWebhookProvider) Configure(ctx context.Context, req provider.Conf
 		return
 	}
 
-	ServerURL := data.ServerURL.ValueString()
+	serverUrl := data.ServerURL.ValueString()
 
-	if ServerURL == "" {
-		ServerURL = "https://webhooks.sls.epilot.io"
+	if serverUrl == "" {
+		serverUrl = "https://webhooks.sls.epilot.io"
 	}
 
-	epilotAuth := new(string)
-	if !data.EpilotAuth.IsUnknown() && !data.EpilotAuth.IsNull() {
-		*epilotAuth = data.EpilotAuth.ValueString()
-	} else {
-		epilotAuth = nil
+	security := shared.Security{}
+
+	if !data.EpilotAuth.IsUnknown() {
+		security.EpilotAuth = data.EpilotAuth.ValueString()
 	}
-	security := shared.Security{
-		EpilotAuth: epilotAuth,
+
+	if security.EpilotAuth == "" {
+		resp.Diagnostics.AddError(
+			"Missing Provider Security Configuration",
+			"Provider configuration epilot_auth attribute must be configured.",
+		)
+	}
+
+	providerHTTPTransportOpts := ProviderHTTPTransportOpts{
+		SetHeaders: make(map[string]string),
+		Transport:  http.DefaultTransport,
 	}
 
 	httpClient := http.DefaultClient
-	httpClient.Transport = NewLoggingHTTPTransport(http.DefaultTransport)
+	httpClient.Transport = NewProviderHTTPTransport(providerHTTPTransportOpts)
 
 	opts := []sdk.SDKOption{
-		sdk.WithServerURL(ServerURL),
+		sdk.WithServerURL(serverUrl),
 		sdk.WithSecurity(security),
 		sdk.WithClient(httpClient),
 	}
-	client := sdk.New(opts...)
 
+	client := sdk.New(opts...)
+	resp.ActionData = client
 	resp.DataSourceData = client
+	resp.EphemeralResourceData = client
+	resp.ListResourceData = client
 	resp.ResourceData = client
+}
+
+func (p *EpilotWebhookProvider) Functions(_ context.Context) []func() function.Function {
+	return []func() function.Function{}
+}
+
+func (p *EpilotWebhookProvider) Actions(_ context.Context) []func() action.Action {
+	return []func() action.Action{}
 }
 
 func (p *EpilotWebhookProvider) Resources(ctx context.Context) []func() resource.Resource {
@@ -100,6 +126,14 @@ func (p *EpilotWebhookProvider) DataSources(ctx context.Context) []func() dataso
 	return []func() datasource.DataSource{
 		NewWebhookDataSource,
 	}
+}
+
+func (p *EpilotWebhookProvider) EphemeralResources(ctx context.Context) []func() ephemeral.EphemeralResource {
+	return []func() ephemeral.EphemeralResource{}
+}
+
+func (p *EpilotWebhookProvider) ListResources(ctx context.Context) []func() list.ListResource {
+	return []func() list.ListResource{}
 }
 
 func New(version string) func() provider.Provider {

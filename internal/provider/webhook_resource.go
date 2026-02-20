@@ -7,7 +7,6 @@ import (
 	"fmt"
 	tfTypes "github.com/epilot-dev/terraform-provider-epilot-webhook/internal/provider/types"
 	"github.com/epilot-dev/terraform-provider-epilot-webhook/internal/sdk"
-	"github.com/epilot-dev/terraform-provider-epilot-webhook/internal/sdk/models/operations"
 	speakeasy_listvalidators "github.com/epilot-dev/terraform-provider-epilot-webhook/internal/validators/listvalidators"
 	speakeasy_objectvalidators "github.com/epilot-dev/terraform-provider-epilot-webhook/internal/validators/objectvalidators"
 	speakeasy_stringvalidators "github.com/epilot-dev/terraform-provider-epilot-webhook/internal/validators/stringvalidators"
@@ -30,6 +29,7 @@ func NewWebhookResource() resource.Resource {
 
 // WebhookResource defines the resource implementation.
 type WebhookResource struct {
+	// Provider configured SDK client.
 	client *sdk.SDK
 }
 
@@ -37,8 +37,8 @@ type WebhookResource struct {
 type WebhookResourceModel struct {
 	Auth                 *tfTypes.Auth                 `tfsdk:"auth"`
 	CreationTime         types.String                  `tfsdk:"creation_time"`
-	EnableStaticIP       types.Bool                    `tfsdk:"enable_static_ip"`
 	Enabled              types.Bool                    `tfsdk:"enabled"`
+	EnableStaticIP       types.Bool                    `tfsdk:"enable_static_ip"`
 	EventName            types.String                  `tfsdk:"event_name"`
 	Filter               *tfTypes.Filter               `tfsdk:"filter"`
 	HTTPMethod           types.String                  `tfsdk:"http_method"`
@@ -359,8 +359,13 @@ func (r *WebhookResource) Create(ctx context.Context, req resource.CreateRequest
 		return
 	}
 
-	request := *data.ToSharedWebhookConfigInput()
-	res, err := r.client.Webhooks.CreateConfig(ctx, request)
+	request, requestDiags := data.ToSharedWebhookConfigInput(ctx)
+	resp.Diagnostics.Append(requestDiags...)
+
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	res, err := r.client.Webhooks.CreateConfig(ctx, *request)
 	if err != nil {
 		resp.Diagnostics.AddError("failure to invoke API", err.Error())
 		if res != nil && res.RawResponse != nil {
@@ -380,8 +385,17 @@ func (r *WebhookResource) Create(ctx context.Context, req resource.CreateRequest
 		resp.Diagnostics.AddError("unexpected response from API. Got an unexpected response body", debugResponse(res.RawResponse))
 		return
 	}
-	data.RefreshFromSharedWebhookConfig(res.WebhookConfig)
-	refreshPlan(ctx, plan, &data, resp.Diagnostics)
+	resp.Diagnostics.Append(data.RefreshFromSharedWebhookConfig(ctx, res.WebhookConfig)...)
+
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	resp.Diagnostics.Append(refreshPlan(ctx, plan, &data)...)
+
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
@@ -405,13 +419,13 @@ func (r *WebhookResource) Read(ctx context.Context, req resource.ReadRequest, re
 		return
 	}
 
-	var configID string
-	configID = data.ID.ValueString()
+	request, requestDiags := data.ToOperationsGetConfigRequest(ctx)
+	resp.Diagnostics.Append(requestDiags...)
 
-	request := operations.GetConfigRequest{
-		ConfigID: configID,
+	if resp.Diagnostics.HasError() {
+		return
 	}
-	res, err := r.client.Webhooks.GetConfig(ctx, request)
+	res, err := r.client.Webhooks.GetConfig(ctx, *request)
 	if err != nil {
 		resp.Diagnostics.AddError("failure to invoke API", err.Error())
 		if res != nil && res.RawResponse != nil {
@@ -435,7 +449,11 @@ func (r *WebhookResource) Read(ctx context.Context, req resource.ReadRequest, re
 		resp.Diagnostics.AddError("unexpected response from API. Got an unexpected response body", debugResponse(res.RawResponse))
 		return
 	}
-	data.RefreshFromSharedWebhookConfig(res.WebhookConfig)
+	resp.Diagnostics.Append(data.RefreshFromSharedWebhookConfig(ctx, res.WebhookConfig)...)
+
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
@@ -455,15 +473,13 @@ func (r *WebhookResource) Update(ctx context.Context, req resource.UpdateRequest
 		return
 	}
 
-	webhookConfig := *data.ToSharedWebhookConfigInput()
-	var configID string
-	configID = data.ID.ValueString()
+	request, requestDiags := data.ToOperationsUpdateConfigRequest(ctx)
+	resp.Diagnostics.Append(requestDiags...)
 
-	request := operations.UpdateConfigRequest{
-		WebhookConfig: webhookConfig,
-		ConfigID:      configID,
+	if resp.Diagnostics.HasError() {
+		return
 	}
-	res, err := r.client.Webhooks.UpdateConfig(ctx, request)
+	res, err := r.client.Webhooks.UpdateConfig(ctx, *request)
 	if err != nil {
 		resp.Diagnostics.AddError("failure to invoke API", err.Error())
 		if res != nil && res.RawResponse != nil {
@@ -483,8 +499,17 @@ func (r *WebhookResource) Update(ctx context.Context, req resource.UpdateRequest
 		resp.Diagnostics.AddError("unexpected response from API. Got an unexpected response body", debugResponse(res.RawResponse))
 		return
 	}
-	data.RefreshFromSharedWebhookConfig(res.WebhookConfig)
-	refreshPlan(ctx, plan, &data, resp.Diagnostics)
+	resp.Diagnostics.Append(data.RefreshFromSharedWebhookConfig(ctx, res.WebhookConfig)...)
+
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	resp.Diagnostics.Append(refreshPlan(ctx, plan, &data)...)
+
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
@@ -508,13 +533,13 @@ func (r *WebhookResource) Delete(ctx context.Context, req resource.DeleteRequest
 		return
 	}
 
-	var configID string
-	configID = data.ID.ValueString()
+	request, requestDiags := data.ToOperationsDeleteConfigRequest(ctx)
+	resp.Diagnostics.Append(requestDiags...)
 
-	request := operations.DeleteConfigRequest{
-		ConfigID: configID,
+	if resp.Diagnostics.HasError() {
+		return
 	}
-	res, err := r.client.Webhooks.DeleteConfig(ctx, request)
+	res, err := r.client.Webhooks.DeleteConfig(ctx, *request)
 	if err != nil {
 		resp.Diagnostics.AddError("failure to invoke API", err.Error())
 		if res != nil && res.RawResponse != nil {
@@ -526,7 +551,10 @@ func (r *WebhookResource) Delete(ctx context.Context, req resource.DeleteRequest
 		resp.Diagnostics.AddError("unexpected response from API", fmt.Sprintf("%v", res))
 		return
 	}
-	if res.StatusCode != 204 {
+	switch res.StatusCode {
+	case 204, 404:
+		break
+	default:
 		resp.Diagnostics.AddError(fmt.Sprintf("unexpected response from API. Got an unexpected response code %v", res.StatusCode), debugResponse(res.RawResponse))
 		return
 	}

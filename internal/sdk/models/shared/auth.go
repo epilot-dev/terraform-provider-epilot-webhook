@@ -12,30 +12,30 @@ type Auth struct {
 	OauthConfig *OAuthConfig `json:"oauthConfig,omitempty"`
 }
 
-func (o *Auth) GetAPIKeyConfig() *APIKeyConfig {
-	if o == nil {
+func (a *Auth) GetAPIKeyConfig() *APIKeyConfig {
+	if a == nil {
 		return nil
 	}
-	return o.APIKeyConfig
+	return a.APIKeyConfig
 }
 
-func (o *Auth) GetAuthType() AuthType {
-	if o == nil {
+func (a *Auth) GetAuthType() AuthType {
+	if a == nil {
 		return AuthType("")
 	}
-	return o.AuthType
+	return a.AuthType
 }
 
-func (o *Auth) GetBasicAuthConfig() *BasicAuthConfig {
-	if o == nil {
+func (a *Auth) GetBasicAuthConfig() *BasicAuthConfig {
+	if a == nil {
 		return nil
 	}
-	return o.BasicAuthConfig
+	return a.BasicAuthConfig
 }
 
-func (o *Auth) GetOauthConfig() *OAuthConfig {
-	if o == nil {
+func (a *Auth) GetOauthConfig() *OAuthConfig {
+	if a == nil {
 		return nil
 	}
-	return o.OauthConfig
+	return a.OauthConfig
 }

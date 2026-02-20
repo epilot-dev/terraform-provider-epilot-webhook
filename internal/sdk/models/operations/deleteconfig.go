@@ -12,11 +12,11 @@ type DeleteConfigRequest struct {
 	ConfigID string `pathParam:"style=simple,explode=false,name=configId"`
 }
 
-func (o *DeleteConfigRequest) GetConfigID() string {
-	if o == nil {
+func (d *DeleteConfigRequest) GetConfigID() string {
+	if d == nil {
 		return ""
 	}
-	return o.ConfigID
+	return d.ConfigID
 }
 
 type DeleteConfigResponse struct {
@@ -30,30 +30,30 @@ type DeleteConfigResponse struct {
 	RawResponse *http.Response
 }
 
-func (o *DeleteConfigResponse) GetContentType() string {
-	if o == nil {
+func (d *DeleteConfigResponse) GetContentType() string {
+	if d == nil {
 		return ""
 	}
-	return o.ContentType
+	return d.ContentType
 }
 
-func (o *DeleteConfigResponse) GetErrorResp() *shared.ErrorResp {
-	if o == nil {
+func (d *DeleteConfigResponse) GetErrorResp() *shared.ErrorResp {
+	if d == nil {
 		return nil
 	}
-	return o.ErrorResp
+	return d.ErrorResp
 }
 
-func (o *DeleteConfigResponse) GetStatusCode() int {
-	if o == nil {
+func (d *DeleteConfigResponse) GetStatusCode() int {
+	if d == nil {
 		return 0
 	}
-	return o.StatusCode
+	return d.StatusCode
 }
 
-func (o *DeleteConfigResponse) GetRawResponse() *http.Response {
-	if o == nil {
+func (d *DeleteConfigResponse) GetRawResponse() *http.Response {
+	if d == nil {
 		return nil
 	}
-	return o.RawResponse
+	return d.RawResponse
 }

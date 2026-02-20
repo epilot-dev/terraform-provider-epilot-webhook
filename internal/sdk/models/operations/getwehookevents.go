@@ -48,25 +48,25 @@ type GetWehookEventsRequest struct {
 	Status *Status `queryParam:"style=form,explode=true,name=status"`
 }
 
-func (o *GetWehookEventsRequest) GetConfigID() string {
-	if o == nil {
+func (g *GetWehookEventsRequest) GetConfigID() string {
+	if g == nil {
 		return ""
 	}
-	return o.ConfigID
+	return g.ConfigID
 }
 
-func (o *GetWehookEventsRequest) GetCursor() *string {
-	if o == nil {
+func (g *GetWehookEventsRequest) GetCursor() *string {
+	if g == nil {
 		return nil
 	}
-	return o.Cursor
+	return g.Cursor
 }
 
-func (o *GetWehookEventsRequest) GetStatus() *Status {
-	if o == nil {
+func (g *GetWehookEventsRequest) GetStatus() *Status {
+	if g == nil {
 		return nil
 	}
-	return o.Status
+	return g.Status
 }
 
 // GetWehookEventsResponseBody - Success - list events
@@ -76,18 +76,18 @@ type GetWehookEventsResponseBody struct {
 	Data   []shared.WebhookEvent `json:"data,omitempty"`
 }
 
-func (o *GetWehookEventsResponseBody) GetCursor() *string {
-	if o == nil {
+func (g *GetWehookEventsResponseBody) GetCursor() *string {
+	if g == nil {
 		return nil
 	}
-	return o.Cursor
+	return g.Cursor
 }
 
-func (o *GetWehookEventsResponseBody) GetData() []shared.WebhookEvent {
-	if o == nil {
+func (g *GetWehookEventsResponseBody) GetData() []shared.WebhookEvent {
+	if g == nil {
 		return nil
 	}
-	return o.Data
+	return g.Data
 }
 
 type GetWehookEventsResponse struct {
@@ -103,37 +103,37 @@ type GetWehookEventsResponse struct {
 	Object *GetWehookEventsResponseBody
 }
 
-func (o *GetWehookEventsResponse) GetContentType() string {
-	if o == nil {
+func (g *GetWehookEventsResponse) GetContentType() string {
+	if g == nil {
 		return ""
 	}
-	return o.ContentType
+	return g.ContentType
 }
 
-func (o *GetWehookEventsResponse) GetErrorResp() *shared.ErrorResp {
-	if o == nil {
+func (g *GetWehookEventsResponse) GetErrorResp() *shared.ErrorResp {
+	if g == nil {
 		return nil
 	}
-	return o.ErrorResp
+	return g.ErrorResp
 }
 
-func (o *GetWehookEventsResponse) GetStatusCode() int {
-	if o == nil {
+func (g *GetWehookEventsResponse) GetStatusCode() int {
+	if g == nil {
 		return 0
 	}
-	return o.StatusCode
+	return g.StatusCode
 }
 
-func (o *GetWehookEventsResponse) GetRawResponse() *http.Response {
-	if o == nil {
+func (g *GetWehookEventsResponse) GetRawResponse() *http.Response {
+	if g == nil {
 		return nil
 	}
-	return o.RawResponse
+	return g.RawResponse
 }
 
-func (o *GetWehookEventsResponse) GetObject() *GetWehookEventsResponseBody {
-	if o == nil {
+func (g *GetWehookEventsResponse) GetObject() *GetWehookEventsResponseBody {
+	if g == nil {
 		return nil
 	}
-	return o.Object
+	return g.Object
 }

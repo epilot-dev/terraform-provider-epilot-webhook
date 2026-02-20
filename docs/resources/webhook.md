@@ -56,7 +56,7 @@ resource "epilot-webhook_webhook" "my_webhook" {
   name = "...my_name..."
   payload_configuration = {
     custom_headers = {
-      key = "value",
+      key = "value"
     }
     hydrate_entity             = true
     include_activity           = false
@@ -169,6 +169,17 @@ Optional:
 
 Import is supported using the following syntax:
 
+In Terraform v1.5.0 and later, the [`import` block](https://developer.hashicorp.com/terraform/language/import) can be used with the `id` attribute, for example:
+
+```terraform
+import {
+  to = epilot-webhook_webhook.my_epilot-webhook_webhook
+  id = "..."
+}
+```
+
+The [`terraform import` command](https://developer.hashicorp.com/terraform/cli/commands/import) can be used, for example:
+
 ```shell
-terraform import epilot-webhook_webhook.my_epilot-webhook_webhook ""
+terraform import epilot-webhook_webhook.my_epilot-webhook_webhook "..."
 ```
