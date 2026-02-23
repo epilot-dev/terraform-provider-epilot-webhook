@@ -191,7 +191,6 @@ func (r *WebhookDataSource) Schema(ctx context.Context, req datasource.SchemaReq
 			},
 			"id": schema.StringAttribute{
 				Computed: true,
-				Optional: true,
 			},
 			"jsonata_expression": schema.StringAttribute{
 				Computed:    true,
