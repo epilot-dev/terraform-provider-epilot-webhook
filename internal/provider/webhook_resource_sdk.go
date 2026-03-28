@@ -240,12 +240,14 @@ func (r *WebhookResourceModel) ToSharedWebhookConfigInput(ctx context.Context) (
 			}
 			customParameterList := make([]shared.CustomOAuthParameter, 0, len(r.Auth.OauthConfig.CustomParameterList))
 			for customParameterListIndex := range r.Auth.OauthConfig.CustomParameterList {
-				var key string
-				key = r.Auth.OauthConfig.CustomParameterList[customParameterListIndex].Key.ValueString()
-
-				typeVar := shared.Type(r.Auth.OauthConfig.CustomParameterList[customParameterListIndex].Type.ValueString())
-				var value string
-				value = r.Auth.OauthConfig.CustomParameterList[customParameterListIndex].Value.ValueString()
+				param := r.Auth.OauthConfig.CustomParameterList[customParameterListIndex]
+				// Skip parameters with unknown or null key/value (e.g., unresolved environment variables)
+				if param.Key.IsUnknown() || param.Key.IsNull() || param.Value.IsUnknown() || param.Value.IsNull() {
+					continue
+				}
+				key := param.Key.ValueString()
+				typeVar := shared.Type(param.Type.ValueString())
+				value := param.Value.ValueString()
 
 				customParameterList = append(customParameterList, shared.CustomOAuthParameter{
 					Key:   key,
@@ -369,10 +371,12 @@ func (r *WebhookResourceModel) ToSharedWebhookConfigInput(ctx context.Context) (
 	if r.PayloadConfiguration != nil {
 		customHeaders := make(map[string]string)
 		for customHeadersKey := range r.PayloadConfiguration.CustomHeaders {
-			var customHeadersInst string
-			customHeadersInst = r.PayloadConfiguration.CustomHeaders[customHeadersKey].ValueString()
-
-			customHeaders[customHeadersKey] = customHeadersInst
+			headerValue := r.PayloadConfiguration.CustomHeaders[customHeadersKey]
+			// Skip headers with unknown or null values (e.g., unresolved environment variables)
+			if headerValue.IsUnknown() || headerValue.IsNull() {
+				continue
+			}
+			customHeaders[customHeadersKey] = headerValue.ValueString()
 		}
 		hydrateEntity := new(bool)
 		if !r.PayloadConfiguration.HydrateEntity.IsUnknown() && !r.PayloadConfiguration.HydrateEntity.IsNull() {
