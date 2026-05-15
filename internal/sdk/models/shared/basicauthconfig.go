@@ -5,7 +5,9 @@ package shared
 // BasicAuthConfig - To be sent only if authType is BASIC
 type BasicAuthConfig struct {
 	Password *string `json:"password,omitempty"`
-	Username string  `json:"username"`
+	// When true, indicates the password value is an environment variable reference (e.g. {{ env.my_secret }})
+	PasswordIsEnvVar *bool  `json:"passwordIsEnvVar,omitempty"`
+	Username         string `json:"username"`
 }
 
 func (b *BasicAuthConfig) GetPassword() *string {
@@ -13,6 +15,13 @@ func (b *BasicAuthConfig) GetPassword() *string {
 		return nil
 	}
 	return b.Password
+}
+
+func (b *BasicAuthConfig) GetPasswordIsEnvVar() *bool {
+	if b == nil {
+		return nil
+	}
+	return b.PasswordIsEnvVar
 }
 
 func (b *BasicAuthConfig) GetUsername() string {

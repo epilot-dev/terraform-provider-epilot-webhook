@@ -7,6 +7,7 @@ import (
 )
 
 type APIKeyConfig struct {
-	KeyName  types.String `tfsdk:"key_name"`
-	KeyValue types.String `tfsdk:"key_value"`
+	KeyName          types.String `tfsdk:"key_name"`
+	KeyValue         types.String `tfsdk:"key_value"`
+	KeyValueIsEnvVar types.Bool   `tfsdk:"key_value_is_env_var"`
 }

@@ -7,6 +7,7 @@ import (
 )
 
 type BasicAuthConfig struct {
-	Password types.String `tfsdk:"password"`
-	Username types.String `tfsdk:"username"`
+	Password         types.String `tfsdk:"password"`
+	PasswordIsEnvVar types.Bool   `tfsdk:"password_is_env_var"`
+	Username         types.String `tfsdk:"username"`
 }

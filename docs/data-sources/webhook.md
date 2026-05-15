@@ -24,6 +24,7 @@ data "epilot-webhook_webhook" "my_webhook" {
 
 - `auth` (Attributes) (see [below for nested schema](#nestedatt--auth))
 - `creation_time` (String) creation timestamp
+- `delivery_mode` (String) Controls how file data is delivered to the endpoint. Only relevant when the webhook is triggered by a file event. Absent for non-file-event webhooks.
 - `enable_static_ip` (Boolean)
 - `enabled` (Boolean)
 - `event_name` (String)
@@ -33,8 +34,11 @@ data "epilot-webhook_webhook" "my_webhook" {
 - `id` (String) The ID of this resource.
 - `jsonata_expression` (String) JSONata expression to transform the payload
 - `manifest` (List of String) Manifest ID used to create/update the webhook resource
+- `multipart_config` (Attributes) Configuration for binary_multipart delivery mode. Specifies the field names used in the multipart form data request. (see [below for nested schema](#nestedatt--multipart_config))
 - `name` (String)
 - `payload_configuration` (Attributes) Configuration for the webhook payload (see [below for nested schema](#nestedatt--payload_configuration))
+- `protected` (Boolean) When true, indicates this webhook configuration is protected and should not be modified without explicit intent.
+- `secure_proxy` (Attributes) Routes webhook requests through a secure VPC proxy (ERP integration service). When set, takes precedence over enableStaticIP. (see [below for nested schema](#nestedatt--secure_proxy))
 - `signing_secret` (String) Per-webhook signing secret following the Standard Webhooks specification.
 Only returned once during webhook creation. Use this secret to verify
 webhook signatures using the `webhook-id`, `webhook-timestamp`, and
@@ -59,6 +63,7 @@ Read-Only:
 
 - `key_name` (String)
 - `key_value` (String)
+- `key_value_is_env_var` (Boolean) When true, indicates the keyValue is an environment variable reference (e.g. {{ env.my_secret }})
 
 
 <a id="nestedatt--auth--basic_auth_config"></a>
@@ -67,6 +72,7 @@ Read-Only:
 Read-Only:
 
 - `password` (String)
+- `password_is_env_var` (Boolean) When true, indicates the password value is an environment variable reference (e.g. {{ env.my_secret }})
 - `username` (String)
 
 
@@ -77,6 +83,7 @@ Read-Only:
 
 - `client_id` (String)
 - `client_secret` (String)
+- `client_secret_is_env_var` (Boolean) When true, indicates the clientSecret value is an environment variable reference (e.g. {{ env.my_secret }})
 - `custom_parameter_list` (Attributes List) (see [below for nested schema](#nestedatt--auth--oauth_config--custom_parameter_list))
 - `endpoint` (String) Https Endpoint for authentication
 - `http_method` (String)
@@ -119,8 +126,18 @@ Read-Only:
 - `field_type` (String) Type hint for the field (affects comparison logic)
 - `is_array_field` (Boolean) Whether the target field is an array (repeatable)
 - `operation` (String)
+- `repeatable_item_op` (Boolean) When true, evaluates conditions per-item in repeatable array fields
 - `values` (List of String) Values to compare against (not required for is_empty/is_not_empty)
 
+
+
+<a id="nestedatt--multipart_config"></a>
+### Nested Schema for `multipart_config`
+
+Read-Only:
+
+- `file_field_name` (String) The name of the form field containing the file binary data.
+- `metadata_field_name` (String) The name of the form field containing the JSON metadata payload.
 
 
 <a id="nestedatt--payload_configuration"></a>
@@ -128,8 +145,18 @@ Read-Only:
 
 Read-Only:
 
+- `apply_changesets` (Boolean) When true, entity fields show proposed changeset values instead of current values
 - `custom_headers` (Map of String) Object representing custom headers as key-value pairs.
 - `hydrate_entity` (Boolean)
 - `include_activity` (Boolean)
 - `include_changed_attributes` (Boolean)
 - `include_relations` (Boolean)
+
+
+<a id="nestedatt--secure_proxy"></a>
+### Nested Schema for `secure_proxy`
+
+Read-Only:
+
+- `integration_id` (String)
+- `use_case_slug` (String)

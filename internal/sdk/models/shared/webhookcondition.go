@@ -115,6 +115,8 @@ type WebhookCondition struct {
 	// Whether the target field is an array (repeatable)
 	IsArrayField *bool     `default:"false" json:"is_array_field"`
 	Operation    Operation `json:"operation"`
+	// When true, evaluates conditions per-item in repeatable array fields
+	RepeatableItemOp *bool `default:"false" json:"repeatable_item_op"`
 	// Values to compare against (not required for is_empty/is_not_empty)
 	Values []string `json:"values,omitempty"`
 }
@@ -156,6 +158,13 @@ func (w *WebhookCondition) GetOperation() Operation {
 		return Operation("")
 	}
 	return w.Operation
+}
+
+func (w *WebhookCondition) GetRepeatableItemOp() *bool {
+	if w == nil {
+		return nil
+	}
+	return w.RepeatableItemOp
 }
 
 func (w *WebhookCondition) GetValues() []string {

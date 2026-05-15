@@ -6,6 +6,8 @@ package shared
 type APIKeyConfig struct {
 	KeyName  string  `json:"keyName"`
 	KeyValue *string `json:"keyValue,omitempty"`
+	// When true, indicates the keyValue is an environment variable reference (e.g. {{ env.my_secret }})
+	KeyValueIsEnvVar *bool `json:"keyValueIsEnvVar,omitempty"`
 }
 
 func (a *APIKeyConfig) GetKeyName() string {
@@ -20,4 +22,11 @@ func (a *APIKeyConfig) GetKeyValue() *string {
 		return nil
 	}
 	return a.KeyValue
+}
+
+func (a *APIKeyConfig) GetKeyValueIsEnvVar() *bool {
+	if a == nil {
+		return nil
+	}
+	return a.KeyValueIsEnvVar
 }

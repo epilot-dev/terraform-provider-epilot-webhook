@@ -4,12 +4,21 @@ package shared
 
 // PayloadConfiguration - Configuration for the webhook payload
 type PayloadConfiguration struct {
+	// When true, entity fields show proposed changeset values instead of current values
+	ApplyChangesets *bool `json:"apply_changesets,omitempty"`
 	// Object representing custom headers as key-value pairs.
 	CustomHeaders            map[string]string `json:"custom_headers,omitempty"`
 	HydrateEntity            *bool             `json:"hydrate_entity,omitempty"`
 	IncludeActivity          *bool             `json:"include_activity,omitempty"`
 	IncludeChangedAttributes *bool             `json:"include_changed_attributes,omitempty"`
 	IncludeRelations         *bool             `json:"include_relations,omitempty"`
+}
+
+func (p *PayloadConfiguration) GetApplyChangesets() *bool {
+	if p == nil {
+		return nil
+	}
+	return p.ApplyChangesets
 }
 
 func (p *PayloadConfiguration) GetCustomHeaders() map[string]string {

@@ -31,6 +31,7 @@ type WebhookDataSource struct {
 type WebhookDataSourceModel struct {
 	Auth                 *tfTypes.Auth                  `tfsdk:"auth"`
 	CreationTime         types.String                   `tfsdk:"creation_time"`
+	DeliveryMode         types.String                   `tfsdk:"delivery_mode"`
 	Enabled              types.Bool                     `tfsdk:"enabled"`
 	EnableStaticIP       types.Bool                     `tfsdk:"enable_static_ip"`
 	EventName            types.String                   `tfsdk:"event_name"`
@@ -40,8 +41,11 @@ type WebhookDataSourceModel struct {
 	ID                   types.String                   `tfsdk:"id"`
 	JsonataExpression    types.String                   `tfsdk:"jsonata_expression"`
 	Manifest             []types.String                 `tfsdk:"manifest"`
+	MultipartConfig      *tfTypes.MultipartConfig       `tfsdk:"multipart_config"`
 	Name                 types.String                   `tfsdk:"name"`
 	PayloadConfiguration *tfTypes.PayloadConfiguration  `tfsdk:"payload_configuration"`
+	Protected            types.Bool                     `tfsdk:"protected"`
+	SecureProxy          *tfTypes.SecureProxy           `tfsdk:"secure_proxy"`
 	SigningSecret        types.String                   `tfsdk:"signing_secret"`
 	Status               types.String                   `tfsdk:"status"`
 	URL                  types.String                   `tfsdk:"url"`
@@ -70,6 +74,10 @@ func (r *WebhookDataSource) Schema(ctx context.Context, req datasource.SchemaReq
 							"key_value": schema.StringAttribute{
 								Computed: true,
 							},
+							"key_value_is_env_var": schema.BoolAttribute{
+								Computed:    true,
+								Description: `When true, indicates the keyValue is an environment variable reference (e.g. {{ env.my_secret }})`,
+							},
 						},
 						Description: `To be sent only if authType is API_KEY`,
 					},
@@ -81,6 +89,10 @@ func (r *WebhookDataSource) Schema(ctx context.Context, req datasource.SchemaReq
 						Attributes: map[string]schema.Attribute{
 							"password": schema.StringAttribute{
 								Computed: true,
+							},
+							"password_is_env_var": schema.BoolAttribute{
+								Computed:    true,
+								Description: `When true, indicates the password value is an environment variable reference (e.g. {{ env.my_secret }})`,
 							},
 							"username": schema.StringAttribute{
 								Computed: true,
@@ -96,6 +108,10 @@ func (r *WebhookDataSource) Schema(ctx context.Context, req datasource.SchemaReq
 							},
 							"client_secret": schema.StringAttribute{
 								Computed: true,
+							},
+							"client_secret_is_env_var": schema.BoolAttribute{
+								Computed:    true,
+								Description: `When true, indicates the clientSecret value is an environment variable reference (e.g. {{ env.my_secret }})`,
 							},
 							"custom_parameter_list": schema.ListNestedAttribute{
 								Computed: true,
@@ -128,6 +144,10 @@ func (r *WebhookDataSource) Schema(ctx context.Context, req datasource.SchemaReq
 			"creation_time": schema.StringAttribute{
 				Computed:    true,
 				Description: `creation timestamp`,
+			},
+			"delivery_mode": schema.StringAttribute{
+				Computed:    true,
+				Description: `Controls how file data is delivered to the endpoint. Only relevant when the webhook is triggered by a file event. Absent for non-file-event webhooks.`,
 			},
 			"enable_static_ip": schema.BoolAttribute{
 				Computed: true,
@@ -172,6 +192,10 @@ func (r *WebhookDataSource) Schema(ctx context.Context, req datasource.SchemaReq
 								"operation": schema.StringAttribute{
 									Computed: true,
 								},
+								"repeatable_item_op": schema.BoolAttribute{
+									Computed:    true,
+									Description: `When true, evaluates conditions per-item in repeatable array fields`,
+								},
 								"values": schema.ListAttribute{
 									Computed:    true,
 									ElementType: types.StringType,
@@ -201,12 +225,30 @@ func (r *WebhookDataSource) Schema(ctx context.Context, req datasource.SchemaReq
 				ElementType: types.StringType,
 				Description: `Manifest ID used to create/update the webhook resource`,
 			},
+			"multipart_config": schema.SingleNestedAttribute{
+				Computed: true,
+				Attributes: map[string]schema.Attribute{
+					"file_field_name": schema.StringAttribute{
+						Computed:    true,
+						Description: `The name of the form field containing the file binary data.`,
+					},
+					"metadata_field_name": schema.StringAttribute{
+						Computed:    true,
+						Description: `The name of the form field containing the JSON metadata payload.`,
+					},
+				},
+				Description: `Configuration for binary_multipart delivery mode. Specifies the field names used in the multipart form data request.`,
+			},
 			"name": schema.StringAttribute{
 				Computed: true,
 			},
 			"payload_configuration": schema.SingleNestedAttribute{
 				Computed: true,
 				Attributes: map[string]schema.Attribute{
+					"apply_changesets": schema.BoolAttribute{
+						Computed:    true,
+						Description: `When true, entity fields show proposed changeset values instead of current values`,
+					},
 					"custom_headers": schema.MapAttribute{
 						Computed:    true,
 						ElementType: types.StringType,
@@ -226,6 +268,22 @@ func (r *WebhookDataSource) Schema(ctx context.Context, req datasource.SchemaReq
 					},
 				},
 				Description: `Configuration for the webhook payload`,
+			},
+			"protected": schema.BoolAttribute{
+				Computed:    true,
+				Description: `When true, indicates this webhook configuration is protected and should not be modified without explicit intent.`,
+			},
+			"secure_proxy": schema.SingleNestedAttribute{
+				Computed: true,
+				Attributes: map[string]schema.Attribute{
+					"integration_id": schema.StringAttribute{
+						Computed: true,
+					},
+					"use_case_slug": schema.StringAttribute{
+						Computed: true,
+					},
+				},
+				Description: `Routes webhook requests through a secure VPC proxy (ERP integration service). When set, takes precedence over enableStaticIP.`,
 			},
 			"signing_secret": schema.StringAttribute{
 				Computed: true,

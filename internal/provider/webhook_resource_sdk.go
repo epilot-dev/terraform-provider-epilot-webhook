@@ -29,6 +29,7 @@ func (r *WebhookResourceModel) RefreshFromSharedWebhookConfig(ctx context.Contex
 				r.Auth.APIKeyConfig = &tfTypes.APIKeyConfig{}
 				r.Auth.APIKeyConfig.KeyName = types.StringValue(resp.Auth.APIKeyConfig.KeyName)
 				r.Auth.APIKeyConfig.KeyValue = types.StringPointerValue(resp.Auth.APIKeyConfig.KeyValue)
+				r.Auth.APIKeyConfig.KeyValueIsEnvVar = types.BoolPointerValue(resp.Auth.APIKeyConfig.KeyValueIsEnvVar)
 			}
 			r.Auth.AuthType = types.StringValue(string(resp.Auth.AuthType))
 			if resp.Auth.BasicAuthConfig == nil {
@@ -36,6 +37,7 @@ func (r *WebhookResourceModel) RefreshFromSharedWebhookConfig(ctx context.Contex
 			} else {
 				r.Auth.BasicAuthConfig = &tfTypes.BasicAuthConfig{}
 				r.Auth.BasicAuthConfig.Password = types.StringPointerValue(resp.Auth.BasicAuthConfig.Password)
+				r.Auth.BasicAuthConfig.PasswordIsEnvVar = types.BoolPointerValue(resp.Auth.BasicAuthConfig.PasswordIsEnvVar)
 				r.Auth.BasicAuthConfig.Username = types.StringValue(resp.Auth.BasicAuthConfig.Username)
 			}
 			if resp.Auth.OauthConfig == nil {
@@ -44,6 +46,7 @@ func (r *WebhookResourceModel) RefreshFromSharedWebhookConfig(ctx context.Contex
 				r.Auth.OauthConfig = &tfTypes.OAuthConfig{}
 				r.Auth.OauthConfig.ClientID = types.StringValue(resp.Auth.OauthConfig.ClientID)
 				r.Auth.OauthConfig.ClientSecret = types.StringPointerValue(resp.Auth.OauthConfig.ClientSecret)
+				r.Auth.OauthConfig.ClientSecretIsEnvVar = types.BoolPointerValue(resp.Auth.OauthConfig.ClientSecretIsEnvVar)
 				r.Auth.OauthConfig.CustomParameterList = []tfTypes.CustomOAuthParameter{}
 
 				for _, customParameterListItem := range resp.Auth.OauthConfig.CustomParameterList {
@@ -60,6 +63,11 @@ func (r *WebhookResourceModel) RefreshFromSharedWebhookConfig(ctx context.Contex
 			}
 		}
 		r.CreationTime = types.StringPointerValue(resp.CreationTime)
+		if resp.DeliveryMode != nil {
+			r.DeliveryMode = types.StringValue(string(*resp.DeliveryMode))
+		} else {
+			r.DeliveryMode = types.StringNull()
+		}
 		r.Enabled = types.BoolPointerValue(resp.Enabled)
 		r.EnableStaticIP = types.BoolPointerValue(resp.EnableStaticIP)
 		r.EventName = types.StringValue(resp.EventName)
@@ -90,6 +98,7 @@ func (r *WebhookResourceModel) RefreshFromSharedWebhookConfig(ctx context.Contex
 				}
 				conditions.IsArrayField = types.BoolPointerValue(conditionsItem.IsArrayField)
 				conditions.Operation = types.StringValue(string(conditionsItem.Operation))
+				conditions.RepeatableItemOp = types.BoolPointerValue(conditionsItem.RepeatableItemOp)
 				conditions.Values = make([]types.String, 0, len(conditionsItem.Values))
 				for _, v := range conditionsItem.Values {
 					conditions.Values = append(conditions.Values, types.StringValue(v))
@@ -110,11 +119,19 @@ func (r *WebhookResourceModel) RefreshFromSharedWebhookConfig(ctx context.Contex
 		}
 		r.ID = types.StringPointerValue(resp.ID)
 		r.JsonataExpression = types.StringPointerValue(resp.JsonataExpression)
+		if resp.MultipartConfig == nil {
+			r.MultipartConfig = nil
+		} else {
+			r.MultipartConfig = &tfTypes.MultipartConfig{}
+			r.MultipartConfig.FileFieldName = types.StringPointerValue(resp.MultipartConfig.FileFieldName)
+			r.MultipartConfig.MetadataFieldName = types.StringPointerValue(resp.MultipartConfig.MetadataFieldName)
+		}
 		r.Name = types.StringValue(resp.Name)
 		if resp.PayloadConfiguration == nil {
 			r.PayloadConfiguration = nil
 		} else {
 			r.PayloadConfiguration = &tfTypes.PayloadConfiguration{}
+			r.PayloadConfiguration.ApplyChangesets = types.BoolPointerValue(resp.PayloadConfiguration.ApplyChangesets)
 			if len(resp.PayloadConfiguration.CustomHeaders) > 0 {
 				r.PayloadConfiguration.CustomHeaders = make(map[string]types.String, len(resp.PayloadConfiguration.CustomHeaders))
 				for key, value := range resp.PayloadConfiguration.CustomHeaders {
@@ -125,6 +142,14 @@ func (r *WebhookResourceModel) RefreshFromSharedWebhookConfig(ctx context.Contex
 			r.PayloadConfiguration.IncludeActivity = types.BoolPointerValue(resp.PayloadConfiguration.IncludeActivity)
 			r.PayloadConfiguration.IncludeChangedAttributes = types.BoolPointerValue(resp.PayloadConfiguration.IncludeChangedAttributes)
 			r.PayloadConfiguration.IncludeRelations = types.BoolPointerValue(resp.PayloadConfiguration.IncludeRelations)
+		}
+		r.Protected = types.BoolPointerValue(resp.Protected)
+		if resp.SecureProxy == nil {
+			r.SecureProxy = nil
+		} else {
+			r.SecureProxy = &tfTypes.SecureProxy{}
+			r.SecureProxy.IntegrationID = types.StringValue(resp.SecureProxy.IntegrationID)
+			r.SecureProxy.UseCaseSlug = types.StringValue(resp.SecureProxy.UseCaseSlug)
 		}
 		r.SigningSecret = types.StringPointerValue(resp.SigningSecret)
 		if resp.Status != nil {
@@ -205,9 +230,16 @@ func (r *WebhookResourceModel) ToSharedWebhookConfigInput(ctx context.Context) (
 			} else {
 				keyValue = nil
 			}
+			keyValueIsEnvVar := new(bool)
+			if !r.Auth.APIKeyConfig.KeyValueIsEnvVar.IsUnknown() && !r.Auth.APIKeyConfig.KeyValueIsEnvVar.IsNull() {
+				*keyValueIsEnvVar = r.Auth.APIKeyConfig.KeyValueIsEnvVar.ValueBool()
+			} else {
+				keyValueIsEnvVar = nil
+			}
 			apiKeyConfig = &shared.APIKeyConfig{
-				KeyName:  keyName,
-				KeyValue: keyValue,
+				KeyName:          keyName,
+				KeyValue:         keyValue,
+				KeyValueIsEnvVar: keyValueIsEnvVar,
 			}
 		}
 		authType := shared.AuthType(r.Auth.AuthType.ValueString())
@@ -219,12 +251,19 @@ func (r *WebhookResourceModel) ToSharedWebhookConfigInput(ctx context.Context) (
 			} else {
 				password = nil
 			}
+			passwordIsEnvVar := new(bool)
+			if !r.Auth.BasicAuthConfig.PasswordIsEnvVar.IsUnknown() && !r.Auth.BasicAuthConfig.PasswordIsEnvVar.IsNull() {
+				*passwordIsEnvVar = r.Auth.BasicAuthConfig.PasswordIsEnvVar.ValueBool()
+			} else {
+				passwordIsEnvVar = nil
+			}
 			var username string
 			username = r.Auth.BasicAuthConfig.Username.ValueString()
 
 			basicAuthConfig = &shared.BasicAuthConfig{
-				Password: password,
-				Username: username,
+				Password:         password,
+				PasswordIsEnvVar: passwordIsEnvVar,
+				Username:         username,
 			}
 		}
 		var oauthConfig *shared.OAuthConfig
@@ -237,6 +276,12 @@ func (r *WebhookResourceModel) ToSharedWebhookConfigInput(ctx context.Context) (
 				*clientSecret = r.Auth.OauthConfig.ClientSecret.ValueString()
 			} else {
 				clientSecret = nil
+			}
+			clientSecretIsEnvVar := new(bool)
+			if !r.Auth.OauthConfig.ClientSecretIsEnvVar.IsUnknown() && !r.Auth.OauthConfig.ClientSecretIsEnvVar.IsNull() {
+				*clientSecretIsEnvVar = r.Auth.OauthConfig.ClientSecretIsEnvVar.ValueBool()
+			} else {
+				clientSecretIsEnvVar = nil
 			}
 			customParameterList := make([]shared.CustomOAuthParameter, 0, len(r.Auth.OauthConfig.CustomParameterList))
 			for customParameterListIndex := range r.Auth.OauthConfig.CustomParameterList {
@@ -258,11 +303,12 @@ func (r *WebhookResourceModel) ToSharedWebhookConfigInput(ctx context.Context) (
 
 			httpMethod := shared.HTTPMethod(r.Auth.OauthConfig.HTTPMethod.ValueString())
 			oauthConfig = &shared.OAuthConfig{
-				ClientID:            clientID,
-				ClientSecret:        clientSecret,
-				CustomParameterList: customParameterList,
-				Endpoint:            endpoint,
-				HTTPMethod:          httpMethod,
+				ClientID:             clientID,
+				ClientSecret:         clientSecret,
+				ClientSecretIsEnvVar: clientSecretIsEnvVar,
+				CustomParameterList:  customParameterList,
+				Endpoint:             endpoint,
+				HTTPMethod:           httpMethod,
 			}
 		}
 		auth = &shared.Auth{
@@ -277,6 +323,12 @@ func (r *WebhookResourceModel) ToSharedWebhookConfigInput(ctx context.Context) (
 		*creationTime = r.CreationTime.ValueString()
 	} else {
 		creationTime = nil
+	}
+	deliveryMode := new(shared.DeliveryMode)
+	if !r.DeliveryMode.IsUnknown() && !r.DeliveryMode.IsNull() {
+		*deliveryMode = shared.DeliveryMode(r.DeliveryMode.ValueString())
+	} else {
+		deliveryMode = nil
 	}
 	enableStaticIP := new(bool)
 	if !r.EnableStaticIP.IsUnknown() && !r.EnableStaticIP.IsNull() {
@@ -327,16 +379,23 @@ func (r *WebhookResourceModel) ToSharedWebhookConfigInput(ctx context.Context) (
 				isArrayField = nil
 			}
 			operation := shared.Operation(r.FilterConditions.Conditions[conditionsIndex].Operation.ValueString())
+			repeatableItemOp := new(bool)
+			if !r.FilterConditions.Conditions[conditionsIndex].RepeatableItemOp.IsUnknown() && !r.FilterConditions.Conditions[conditionsIndex].RepeatableItemOp.IsNull() {
+				*repeatableItemOp = r.FilterConditions.Conditions[conditionsIndex].RepeatableItemOp.ValueBool()
+			} else {
+				repeatableItemOp = nil
+			}
 			values := make([]string, 0, len(r.FilterConditions.Conditions[conditionsIndex].Values))
 			for valuesIndex := range r.FilterConditions.Conditions[conditionsIndex].Values {
 				values = append(values, r.FilterConditions.Conditions[conditionsIndex].Values[valuesIndex].ValueString())
 			}
 			conditions = append(conditions, shared.WebhookCondition{
-				Field:        field,
-				FieldType:    fieldType,
-				IsArrayField: isArrayField,
-				Operation:    operation,
-				Values:       values,
+				Field:            field,
+				FieldType:        fieldType,
+				IsArrayField:     isArrayField,
+				Operation:        operation,
+				RepeatableItemOp: repeatableItemOp,
+				Values:           values,
 			})
 		}
 		logicalOperator := new(shared.LogicalOperator)
@@ -362,11 +421,36 @@ func (r *WebhookResourceModel) ToSharedWebhookConfigInput(ctx context.Context) (
 	} else {
 		jsonataExpression = nil
 	}
+	var multipartConfig *shared.MultipartConfig
+	if r.MultipartConfig != nil {
+		fileFieldName := new(string)
+		if !r.MultipartConfig.FileFieldName.IsUnknown() && !r.MultipartConfig.FileFieldName.IsNull() {
+			*fileFieldName = r.MultipartConfig.FileFieldName.ValueString()
+		} else {
+			fileFieldName = nil
+		}
+		metadataFieldName := new(string)
+		if !r.MultipartConfig.MetadataFieldName.IsUnknown() && !r.MultipartConfig.MetadataFieldName.IsNull() {
+			*metadataFieldName = r.MultipartConfig.MetadataFieldName.ValueString()
+		} else {
+			metadataFieldName = nil
+		}
+		multipartConfig = &shared.MultipartConfig{
+			FileFieldName:     fileFieldName,
+			MetadataFieldName: metadataFieldName,
+		}
+	}
 	var name string
 	name = r.Name.ValueString()
 
 	var payloadConfiguration *shared.PayloadConfiguration
 	if r.PayloadConfiguration != nil {
+		applyChangesets := new(bool)
+		if !r.PayloadConfiguration.ApplyChangesets.IsUnknown() && !r.PayloadConfiguration.ApplyChangesets.IsNull() {
+			*applyChangesets = r.PayloadConfiguration.ApplyChangesets.ValueBool()
+		} else {
+			applyChangesets = nil
+		}
 		customHeaders := make(map[string]string)
 		for customHeadersKey := range r.PayloadConfiguration.CustomHeaders {
 			var customHeadersInst string
@@ -399,11 +483,31 @@ func (r *WebhookResourceModel) ToSharedWebhookConfigInput(ctx context.Context) (
 			includeRelations = nil
 		}
 		payloadConfiguration = &shared.PayloadConfiguration{
+			ApplyChangesets:          applyChangesets,
 			CustomHeaders:            customHeaders,
 			HydrateEntity:            hydrateEntity,
 			IncludeActivity:          includeActivity,
 			IncludeChangedAttributes: includeChangedAttributes,
 			IncludeRelations:         includeRelations,
+		}
+	}
+	protected := new(bool)
+	if !r.Protected.IsUnknown() && !r.Protected.IsNull() {
+		*protected = r.Protected.ValueBool()
+	} else {
+		protected = nil
+	}
+	var secureProxy *shared.SecureProxy
+	if r.SecureProxy != nil {
+		var integrationID string
+		integrationID = r.SecureProxy.IntegrationID.ValueString()
+
+		var useCaseSlug string
+		useCaseSlug = r.SecureProxy.UseCaseSlug.ValueString()
+
+		secureProxy = &shared.SecureProxy{
+			IntegrationID: integrationID,
+			UseCaseSlug:   useCaseSlug,
 		}
 	}
 	status := new(shared.WebhookConfigStatus)
@@ -422,6 +526,7 @@ func (r *WebhookResourceModel) ToSharedWebhookConfigInput(ctx context.Context) (
 		Manifest:             manifest,
 		Auth:                 auth,
 		CreationTime:         creationTime,
+		DeliveryMode:         deliveryMode,
 		EnableStaticIP:       enableStaticIP,
 		Enabled:              enabled,
 		EventName:            eventName,
@@ -429,8 +534,11 @@ func (r *WebhookResourceModel) ToSharedWebhookConfigInput(ctx context.Context) (
 		FilterConditions:     filterConditions,
 		HTTPMethod:           httpMethod1,
 		JsonataExpression:    jsonataExpression,
+		MultipartConfig:      multipartConfig,
 		Name:                 name,
 		PayloadConfiguration: payloadConfiguration,
+		Protected:            protected,
+		SecureProxy:          secureProxy,
 		Status:               status,
 		URL:                  url,
 	}

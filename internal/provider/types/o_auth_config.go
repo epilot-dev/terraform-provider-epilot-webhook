@@ -7,9 +7,10 @@ import (
 )
 
 type OAuthConfig struct {
-	ClientID            types.String           `tfsdk:"client_id"`
-	ClientSecret        types.String           `tfsdk:"client_secret"`
-	CustomParameterList []CustomOAuthParameter `tfsdk:"custom_parameter_list"`
-	Endpoint            types.String           `tfsdk:"endpoint"`
-	HTTPMethod          types.String           `tfsdk:"http_method"`
+	ClientID             types.String           `tfsdk:"client_id"`
+	ClientSecret         types.String           `tfsdk:"client_secret"`
+	ClientSecretIsEnvVar types.Bool             `tfsdk:"client_secret_is_env_var"`
+	CustomParameterList  []CustomOAuthParameter `tfsdk:"custom_parameter_list"`
+	Endpoint             types.String           `tfsdk:"endpoint"`
+	HTTPMethod           types.String           `tfsdk:"http_method"`
 }

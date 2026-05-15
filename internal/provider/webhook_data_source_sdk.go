@@ -29,6 +29,7 @@ func (r *WebhookDataSourceModel) RefreshFromSharedWebhookConfig(ctx context.Cont
 				r.Auth.APIKeyConfig = &tfTypes.APIKeyConfig{}
 				r.Auth.APIKeyConfig.KeyName = types.StringValue(resp.Auth.APIKeyConfig.KeyName)
 				r.Auth.APIKeyConfig.KeyValue = types.StringPointerValue(resp.Auth.APIKeyConfig.KeyValue)
+				r.Auth.APIKeyConfig.KeyValueIsEnvVar = types.BoolPointerValue(resp.Auth.APIKeyConfig.KeyValueIsEnvVar)
 			}
 			r.Auth.AuthType = types.StringValue(string(resp.Auth.AuthType))
 			if resp.Auth.BasicAuthConfig == nil {
@@ -36,6 +37,7 @@ func (r *WebhookDataSourceModel) RefreshFromSharedWebhookConfig(ctx context.Cont
 			} else {
 				r.Auth.BasicAuthConfig = &tfTypes.BasicAuthConfig{}
 				r.Auth.BasicAuthConfig.Password = types.StringPointerValue(resp.Auth.BasicAuthConfig.Password)
+				r.Auth.BasicAuthConfig.PasswordIsEnvVar = types.BoolPointerValue(resp.Auth.BasicAuthConfig.PasswordIsEnvVar)
 				r.Auth.BasicAuthConfig.Username = types.StringValue(resp.Auth.BasicAuthConfig.Username)
 			}
 			if resp.Auth.OauthConfig == nil {
@@ -44,6 +46,7 @@ func (r *WebhookDataSourceModel) RefreshFromSharedWebhookConfig(ctx context.Cont
 				r.Auth.OauthConfig = &tfTypes.OAuthConfig{}
 				r.Auth.OauthConfig.ClientID = types.StringValue(resp.Auth.OauthConfig.ClientID)
 				r.Auth.OauthConfig.ClientSecret = types.StringPointerValue(resp.Auth.OauthConfig.ClientSecret)
+				r.Auth.OauthConfig.ClientSecretIsEnvVar = types.BoolPointerValue(resp.Auth.OauthConfig.ClientSecretIsEnvVar)
 				r.Auth.OauthConfig.CustomParameterList = []tfTypes.CustomOAuthParameter{}
 
 				for _, customParameterListItem := range resp.Auth.OauthConfig.CustomParameterList {
@@ -60,6 +63,11 @@ func (r *WebhookDataSourceModel) RefreshFromSharedWebhookConfig(ctx context.Cont
 			}
 		}
 		r.CreationTime = types.StringPointerValue(resp.CreationTime)
+		if resp.DeliveryMode != nil {
+			r.DeliveryMode = types.StringValue(string(*resp.DeliveryMode))
+		} else {
+			r.DeliveryMode = types.StringNull()
+		}
 		r.Enabled = types.BoolPointerValue(resp.Enabled)
 		r.EnableStaticIP = types.BoolPointerValue(resp.EnableStaticIP)
 		r.EventName = types.StringValue(resp.EventName)
@@ -90,6 +98,7 @@ func (r *WebhookDataSourceModel) RefreshFromSharedWebhookConfig(ctx context.Cont
 				}
 				conditions.IsArrayField = types.BoolPointerValue(conditionsItem.IsArrayField)
 				conditions.Operation = types.StringValue(string(conditionsItem.Operation))
+				conditions.RepeatableItemOp = types.BoolPointerValue(conditionsItem.RepeatableItemOp)
 				conditions.Values = make([]types.String, 0, len(conditionsItem.Values))
 				for _, v := range conditionsItem.Values {
 					conditions.Values = append(conditions.Values, types.StringValue(v))
@@ -110,11 +119,19 @@ func (r *WebhookDataSourceModel) RefreshFromSharedWebhookConfig(ctx context.Cont
 		}
 		r.ID = types.StringPointerValue(resp.ID)
 		r.JsonataExpression = types.StringPointerValue(resp.JsonataExpression)
+		if resp.MultipartConfig == nil {
+			r.MultipartConfig = nil
+		} else {
+			r.MultipartConfig = &tfTypes.MultipartConfig{}
+			r.MultipartConfig.FileFieldName = types.StringPointerValue(resp.MultipartConfig.FileFieldName)
+			r.MultipartConfig.MetadataFieldName = types.StringPointerValue(resp.MultipartConfig.MetadataFieldName)
+		}
 		r.Name = types.StringValue(resp.Name)
 		if resp.PayloadConfiguration == nil {
 			r.PayloadConfiguration = nil
 		} else {
 			r.PayloadConfiguration = &tfTypes.PayloadConfiguration{}
+			r.PayloadConfiguration.ApplyChangesets = types.BoolPointerValue(resp.PayloadConfiguration.ApplyChangesets)
 			if len(resp.PayloadConfiguration.CustomHeaders) > 0 {
 				r.PayloadConfiguration.CustomHeaders = make(map[string]types.String, len(resp.PayloadConfiguration.CustomHeaders))
 				for key, value := range resp.PayloadConfiguration.CustomHeaders {
@@ -125,6 +142,14 @@ func (r *WebhookDataSourceModel) RefreshFromSharedWebhookConfig(ctx context.Cont
 			r.PayloadConfiguration.IncludeActivity = types.BoolPointerValue(resp.PayloadConfiguration.IncludeActivity)
 			r.PayloadConfiguration.IncludeChangedAttributes = types.BoolPointerValue(resp.PayloadConfiguration.IncludeChangedAttributes)
 			r.PayloadConfiguration.IncludeRelations = types.BoolPointerValue(resp.PayloadConfiguration.IncludeRelations)
+		}
+		r.Protected = types.BoolPointerValue(resp.Protected)
+		if resp.SecureProxy == nil {
+			r.SecureProxy = nil
+		} else {
+			r.SecureProxy = &tfTypes.SecureProxy{}
+			r.SecureProxy.IntegrationID = types.StringValue(resp.SecureProxy.IntegrationID)
+			r.SecureProxy.UseCaseSlug = types.StringValue(resp.SecureProxy.UseCaseSlug)
 		}
 		r.SigningSecret = types.StringPointerValue(resp.SigningSecret)
 		if resp.Status != nil {

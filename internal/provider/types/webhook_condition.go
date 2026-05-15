@@ -7,9 +7,10 @@ import (
 )
 
 type WebhookCondition struct {
-	Field        types.String   `tfsdk:"field"`
-	FieldType    types.String   `tfsdk:"field_type"`
-	IsArrayField types.Bool     `tfsdk:"is_array_field"`
-	Operation    types.String   `tfsdk:"operation"`
-	Values       []types.String `tfsdk:"values"`
+	Field            types.String   `tfsdk:"field"`
+	FieldType        types.String   `tfsdk:"field_type"`
+	IsArrayField     types.Bool     `tfsdk:"is_array_field"`
+	Operation        types.String   `tfsdk:"operation"`
+	RepeatableItemOp types.Bool     `tfsdk:"repeatable_item_op"`
+	Values           []types.String `tfsdk:"values"`
 }

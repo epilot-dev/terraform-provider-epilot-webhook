@@ -16,17 +16,20 @@ Webhook Resource
 resource "epilot-webhook_webhook" "my_webhook" {
   auth = {
     api_key_config = {
-      key_name  = "...my_key_name..."
-      key_value = "...my_key_value..."
+      key_name             = "...my_key_name..."
+      key_value            = "...my_key_value..."
+      key_value_is_env_var = true
     }
     auth_type = "NONE"
     basic_auth_config = {
-      password = "...my_password..."
-      username = "...my_username..."
+      password            = "...my_password..."
+      password_is_env_var = true
+      username            = "...my_username..."
     }
     oauth_config = {
-      client_id     = "...my_client_id..."
-      client_secret = "...my_client_secret..."
+      client_id                = "...my_client_id..."
+      client_secret            = "...my_client_secret..."
+      client_secret_is_env_var = true
       custom_parameter_list = [
         {
           key   = "...my_key..."
@@ -39,6 +42,7 @@ resource "epilot-webhook_webhook" "my_webhook" {
     }
   }
   creation_time    = "2021-04-27T12:01:13.000Z"
+  delivery_mode    = "binary_multipart"
   enable_static_ip = false
   enabled          = false
   event_name       = "...my_event_name..."
@@ -51,10 +55,11 @@ resource "epilot-webhook_webhook" "my_webhook" {
   filter_conditions = {
     conditions = [
       {
-        field          = "...my_field..."
-        field_type     = "number"
-        is_array_field = true
-        operation      = "none_of"
+        field              = "...my_field..."
+        field_type         = "number"
+        is_array_field     = true
+        operation          = "none_of"
+        repeatable_item_op = false
         values = [
           "..."
         ]
@@ -67,8 +72,13 @@ resource "epilot-webhook_webhook" "my_webhook" {
   manifest = [
     "123e4567-e89b-12d3-a456-426614174000"
   ]
+  multipart_config = {
+    file_field_name     = "file"
+    metadata_field_name = "metadata"
+  }
   name = "...my_name..."
   payload_configuration = {
+    apply_changesets = true
     custom_headers = {
       key = "value"
     }
@@ -76,6 +86,11 @@ resource "epilot-webhook_webhook" "my_webhook" {
     include_activity           = false
     include_changed_attributes = true
     include_relations          = true
+  }
+  protected = false
+  secure_proxy = {
+    integration_id = "123e4567-e89b-12d3-a456-426614174000"
+    use_case_slug  = "...my_use_case_slug..."
   }
   status = "active"
   url    = "...my_url..."
@@ -94,6 +109,7 @@ resource "epilot-webhook_webhook" "my_webhook" {
 
 - `auth` (Attributes) (see [below for nested schema](#nestedatt--auth))
 - `creation_time` (String) creation timestamp
+- `delivery_mode` (String) Controls how file data is delivered to the endpoint. Only relevant when the webhook is triggered by a file event. Absent for non-file-event webhooks. must be one of ["json_base64", "binary_multipart"]
 - `enable_static_ip` (Boolean)
 - `enabled` (Boolean)
 - `filter` (Attributes) (see [below for nested schema](#nestedatt--filter))
@@ -101,7 +117,10 @@ resource "epilot-webhook_webhook" "my_webhook" {
 - `http_method` (String) must be one of ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"]
 - `jsonata_expression` (String) JSONata expression to transform the payload
 - `manifest` (List of String) Manifest ID used to create/update the webhook resource
+- `multipart_config` (Attributes) Configuration for binary_multipart delivery mode. Specifies the field names used in the multipart form data request. (see [below for nested schema](#nestedatt--multipart_config))
 - `payload_configuration` (Attributes) Configuration for the webhook payload (see [below for nested schema](#nestedatt--payload_configuration))
+- `protected` (Boolean) When true, indicates this webhook configuration is protected and should not be modified without explicit intent.
+- `secure_proxy` (Attributes) Routes webhook requests through a secure VPC proxy (ERP integration service). When set, takes precedence over enableStaticIP. (see [below for nested schema](#nestedatt--secure_proxy))
 - `status` (String) must be one of ["active", "inactive", "incomplete"]
 - `url` (String)
 
@@ -130,6 +149,7 @@ Optional:
 
 - `key_name` (String) Not Null
 - `key_value` (String)
+- `key_value_is_env_var` (Boolean) When true, indicates the keyValue is an environment variable reference (e.g. {{ env.my_secret }})
 
 
 <a id="nestedatt--auth--basic_auth_config"></a>
@@ -138,6 +158,7 @@ Optional:
 Optional:
 
 - `password` (String)
+- `password_is_env_var` (Boolean) When true, indicates the password value is an environment variable reference (e.g. {{ env.my_secret }})
 - `username` (String) Not Null
 
 
@@ -148,6 +169,7 @@ Optional:
 
 - `client_id` (String) Not Null
 - `client_secret` (String)
+- `client_secret_is_env_var` (Boolean) When true, indicates the clientSecret value is an environment variable reference (e.g. {{ env.my_secret }})
 - `custom_parameter_list` (Attributes List) (see [below for nested schema](#nestedatt--auth--oauth_config--custom_parameter_list))
 - `endpoint` (String) Https Endpoint for authentication. Not Null
 - `http_method` (String) Not Null; must be one of ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"]
@@ -190,8 +212,18 @@ Optional:
 - `field_type` (String) Type hint for the field (affects comparison logic). Default: "string"; must be one of ["string", "number", "boolean", "date", "datetime"]
 - `is_array_field` (Boolean) Whether the target field is an array (repeatable). Default: false
 - `operation` (String) Not Null; must be one of ["equals", "not_equals", "any_of", "none_of", "contains", "not_contains", "starts_with", "ends_with", "greater_than", "less_than", "greater_than_or_equals", "less_than_or_equals", "is_empty", "is_not_empty"]
+- `repeatable_item_op` (Boolean) When true, evaluates conditions per-item in repeatable array fields. Default: false
 - `values` (List of String) Values to compare against (not required for is_empty/is_not_empty)
 
+
+
+<a id="nestedatt--multipart_config"></a>
+### Nested Schema for `multipart_config`
+
+Optional:
+
+- `file_field_name` (String) The name of the form field containing the file binary data.
+- `metadata_field_name` (String) The name of the form field containing the JSON metadata payload.
 
 
 <a id="nestedatt--payload_configuration"></a>
@@ -199,11 +231,21 @@ Optional:
 
 Optional:
 
+- `apply_changesets` (Boolean) When true, entity fields show proposed changeset values instead of current values
 - `custom_headers` (Map of String) Object representing custom headers as key-value pairs.
 - `hydrate_entity` (Boolean)
 - `include_activity` (Boolean)
 - `include_changed_attributes` (Boolean)
 - `include_relations` (Boolean)
+
+
+<a id="nestedatt--secure_proxy"></a>
+### Nested Schema for `secure_proxy`
+
+Optional:
+
+- `integration_id` (String) Not Null
+- `use_case_slug` (String) Not Null
 
 ## Import
 

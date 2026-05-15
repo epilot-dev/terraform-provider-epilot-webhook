@@ -41,20 +41,28 @@ type WebhookConfig struct {
 	Manifest []string `json:"_manifest,omitempty"`
 	Auth     *Auth    `json:"auth,omitempty"`
 	// creation timestamp
-	CreationTime   *string `json:"creationTime,omitempty"`
-	EnableStaticIP *bool   `json:"enableStaticIP,omitempty"`
-	Enabled        *bool   `json:"enabled,omitempty"`
-	EventName      string  `json:"eventName"`
-	Filter         *Filter `json:"filter,omitempty"`
+	CreationTime *string `json:"creationTime,omitempty"`
+	// Controls how file data is delivered to the endpoint. Only relevant when the webhook is triggered by a file event. Absent for non-file-event webhooks.
+	DeliveryMode   *DeliveryMode `json:"deliveryMode,omitempty"`
+	EnableStaticIP *bool         `json:"enableStaticIP,omitempty"`
+	Enabled        *bool         `json:"enabled,omitempty"`
+	EventName      string        `json:"eventName"`
+	Filter         *Filter       `json:"filter,omitempty"`
 	// A group of conditions with a logical operator. Multiple conditions are AND-ed by default.
 	FilterConditions *WebhookConditionGroup `json:"filterConditions,omitempty"`
 	HTTPMethod       *HTTPMethod            `json:"httpMethod,omitempty"`
 	ID               *string                `json:"id,omitempty"`
 	// JSONata expression to transform the payload
 	JsonataExpression *string `json:"jsonataExpression,omitempty"`
-	Name              string  `json:"name"`
+	// Configuration for binary_multipart delivery mode. Specifies the field names used in the multipart form data request.
+	MultipartConfig *MultipartConfig `json:"multipartConfig,omitempty"`
+	Name            string           `json:"name"`
 	// Configuration for the webhook payload
 	PayloadConfiguration *PayloadConfiguration `json:"payloadConfiguration,omitempty"`
+	// When true, indicates this webhook configuration is protected and should not be modified without explicit intent.
+	Protected *bool `json:"protected,omitempty"`
+	// Routes webhook requests through a secure VPC proxy (ERP integration service). When set, takes precedence over enableStaticIP.
+	SecureProxy *SecureProxy `json:"secureProxy,omitempty"`
 	// Per-webhook signing secret following the Standard Webhooks specification.
 	// Only returned once during webhook creation. Use this secret to verify
 	// webhook signatures using the `webhook-id`, `webhook-timestamp`, and
@@ -84,6 +92,13 @@ func (w *WebhookConfig) GetCreationTime() *string {
 		return nil
 	}
 	return w.CreationTime
+}
+
+func (w *WebhookConfig) GetDeliveryMode() *DeliveryMode {
+	if w == nil {
+		return nil
+	}
+	return w.DeliveryMode
 }
 
 func (w *WebhookConfig) GetEnableStaticIP() *bool {
@@ -142,6 +157,13 @@ func (w *WebhookConfig) GetJsonataExpression() *string {
 	return w.JsonataExpression
 }
 
+func (w *WebhookConfig) GetMultipartConfig() *MultipartConfig {
+	if w == nil {
+		return nil
+	}
+	return w.MultipartConfig
+}
+
 func (w *WebhookConfig) GetName() string {
 	if w == nil {
 		return ""
@@ -154,6 +176,20 @@ func (w *WebhookConfig) GetPayloadConfiguration() *PayloadConfiguration {
 		return nil
 	}
 	return w.PayloadConfiguration
+}
+
+func (w *WebhookConfig) GetProtected() *bool {
+	if w == nil {
+		return nil
+	}
+	return w.Protected
+}
+
+func (w *WebhookConfig) GetSecureProxy() *SecureProxy {
+	if w == nil {
+		return nil
+	}
+	return w.SecureProxy
 }
 
 func (w *WebhookConfig) GetSigningSecret() *string {
@@ -182,21 +218,29 @@ type WebhookConfigInput struct {
 	Manifest []string `json:"_manifest,omitempty"`
 	Auth     *Auth    `json:"auth,omitempty"`
 	// creation timestamp
-	CreationTime   *string `json:"creationTime,omitempty"`
-	EnableStaticIP *bool   `json:"enableStaticIP,omitempty"`
-	Enabled        *bool   `json:"enabled,omitempty"`
-	EventName      string  `json:"eventName"`
-	Filter         *Filter `json:"filter,omitempty"`
+	CreationTime *string `json:"creationTime,omitempty"`
+	// Controls how file data is delivered to the endpoint. Only relevant when the webhook is triggered by a file event. Absent for non-file-event webhooks.
+	DeliveryMode   *DeliveryMode `json:"deliveryMode,omitempty"`
+	EnableStaticIP *bool         `json:"enableStaticIP,omitempty"`
+	Enabled        *bool         `json:"enabled,omitempty"`
+	EventName      string        `json:"eventName"`
+	Filter         *Filter       `json:"filter,omitempty"`
 	// A group of conditions with a logical operator. Multiple conditions are AND-ed by default.
 	FilterConditions *WebhookConditionGroup `json:"filterConditions,omitempty"`
 	HTTPMethod       *HTTPMethod            `json:"httpMethod,omitempty"`
 	// JSONata expression to transform the payload
 	JsonataExpression *string `json:"jsonataExpression,omitempty"`
-	Name              string  `json:"name"`
+	// Configuration for binary_multipart delivery mode. Specifies the field names used in the multipart form data request.
+	MultipartConfig *MultipartConfig `json:"multipartConfig,omitempty"`
+	Name            string           `json:"name"`
 	// Configuration for the webhook payload
 	PayloadConfiguration *PayloadConfiguration `json:"payloadConfiguration,omitempty"`
-	Status               *WebhookConfigStatus  `json:"status,omitempty"`
-	URL                  *string               `json:"url,omitempty"`
+	// When true, indicates this webhook configuration is protected and should not be modified without explicit intent.
+	Protected *bool `json:"protected,omitempty"`
+	// Routes webhook requests through a secure VPC proxy (ERP integration service). When set, takes precedence over enableStaticIP.
+	SecureProxy *SecureProxy         `json:"secureProxy,omitempty"`
+	Status      *WebhookConfigStatus `json:"status,omitempty"`
+	URL         *string              `json:"url,omitempty"`
 }
 
 func (w *WebhookConfigInput) GetManifest() []string {
@@ -218,6 +262,13 @@ func (w *WebhookConfigInput) GetCreationTime() *string {
 		return nil
 	}
 	return w.CreationTime
+}
+
+func (w *WebhookConfigInput) GetDeliveryMode() *DeliveryMode {
+	if w == nil {
+		return nil
+	}
+	return w.DeliveryMode
 }
 
 func (w *WebhookConfigInput) GetEnableStaticIP() *bool {
@@ -269,6 +320,13 @@ func (w *WebhookConfigInput) GetJsonataExpression() *string {
 	return w.JsonataExpression
 }
 
+func (w *WebhookConfigInput) GetMultipartConfig() *MultipartConfig {
+	if w == nil {
+		return nil
+	}
+	return w.MultipartConfig
+}
+
 func (w *WebhookConfigInput) GetName() string {
 	if w == nil {
 		return ""
@@ -281,6 +339,20 @@ func (w *WebhookConfigInput) GetPayloadConfiguration() *PayloadConfiguration {
 		return nil
 	}
 	return w.PayloadConfiguration
+}
+
+func (w *WebhookConfigInput) GetProtected() *bool {
+	if w == nil {
+		return nil
+	}
+	return w.Protected
+}
+
+func (w *WebhookConfigInput) GetSecureProxy() *SecureProxy {
+	if w == nil {
+		return nil
+	}
+	return w.SecureProxy
 }
 
 func (w *WebhookConfigInput) GetStatus() *WebhookConfigStatus {

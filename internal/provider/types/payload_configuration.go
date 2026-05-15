@@ -7,6 +7,7 @@ import (
 )
 
 type PayloadConfiguration struct {
+	ApplyChangesets          types.Bool              `tfsdk:"apply_changesets"`
 	CustomHeaders            map[string]types.String `tfsdk:"custom_headers"`
 	HydrateEntity            types.Bool              `tfsdk:"hydrate_entity"`
 	IncludeActivity          types.Bool              `tfsdk:"include_activity"`

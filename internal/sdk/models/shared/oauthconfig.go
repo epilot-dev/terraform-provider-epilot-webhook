@@ -4,9 +4,11 @@ package shared
 
 // OAuthConfig - To be sent only if authType is OAUTH_CLIENT_CREDENTIALS
 type OAuthConfig struct {
-	ClientID            string                 `json:"clientId"`
-	ClientSecret        *string                `json:"clientSecret,omitempty"`
-	CustomParameterList []CustomOAuthParameter `json:"customParameterList,omitempty"`
+	ClientID     string  `json:"clientId"`
+	ClientSecret *string `json:"clientSecret,omitempty"`
+	// When true, indicates the clientSecret value is an environment variable reference (e.g. {{ env.my_secret }})
+	ClientSecretIsEnvVar *bool                  `json:"clientSecretIsEnvVar,omitempty"`
+	CustomParameterList  []CustomOAuthParameter `json:"customParameterList,omitempty"`
 	// Https Endpoint for authentication
 	Endpoint   string     `json:"endpoint"`
 	HTTPMethod HTTPMethod `json:"httpMethod"`
@@ -24,6 +26,13 @@ func (o *OAuthConfig) GetClientSecret() *string {
 		return nil
 	}
 	return o.ClientSecret
+}
+
+func (o *OAuthConfig) GetClientSecretIsEnvVar() *bool {
+	if o == nil {
+		return nil
+	}
+	return o.ClientSecretIsEnvVar
 }
 
 func (o *OAuthConfig) GetCustomParameterList() []CustomOAuthParameter {

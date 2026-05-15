@@ -1,7 +1,7 @@
-import {
-  to = epilot-webhook_webhook.my_epilot-webhook_webhook
-  id = "4yBbd5fpsHrHvMJ7kQeHJJ"
-}
+# import {
+#   to = epilot-webhook_webhook.my_epilot-webhook_webhook
+#   id = "4yBbd5fpsHrHvMJ7kQeHJJ"
+# }
 
 
 terraform {

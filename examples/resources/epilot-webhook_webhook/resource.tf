@@ -1,17 +1,20 @@
 # resource "epilot-webhook_webhook" "my_webhook" {
 #   auth = {
 #     api_key_config = {
-#       key_name  = "...my_key_name..."
-#       key_value = "...my_key_value..."
+#       key_name             = "...my_key_name..."
+#       key_value            = "...my_key_value..."
+#       key_value_is_env_var = true
 #     }
 #     auth_type = "NONE"
 #     basic_auth_config = {
-#       password = "...my_password..."
-#       username = "...my_username..."
+#       password            = "...my_password..."
+#       password_is_env_var = true
+#       username            = "...my_username..."
 #     }
 #     oauth_config = {
-#       client_id     = "...my_client_id..."
-#       client_secret = "...my_client_secret..."
+#       client_id                = "...my_client_id..."
+#       client_secret            = "...my_client_secret..."
+#       client_secret_is_env_var = true
 #       custom_parameter_list = [
 #         {
 #           key   = "...my_key..."
@@ -24,6 +27,7 @@
 #     }
 #   }
 #   creation_time    = "2021-04-27T12:01:13.000Z"
+#   delivery_mode    = "binary_multipart"
 #   enable_static_ip = false
 #   enabled          = false
 #   event_name       = "...my_event_name..."
@@ -36,10 +40,11 @@
 #   filter_conditions = {
 #     conditions = [
 #       {
-#         field          = "...my_field..."
-#         field_type     = "number"
-#         is_array_field = true
-#         operation      = "none_of"
+#         field              = "...my_field..."
+#         field_type         = "number"
+#         is_array_field     = true
+#         operation          = "none_of"
+#         repeatable_item_op = false
 #         values = [
 #           "..."
 #         ]
@@ -52,8 +57,13 @@
 #   manifest = [
 #     "123e4567-e89b-12d3-a456-426614174000"
 #   ]
+#   multipart_config = {
+#     file_field_name     = "file"
+#     metadata_field_name = "metadata"
+#   }
 #   name = "...my_name..."
 #   payload_configuration = {
+#     apply_changesets = true
 #     custom_headers = {
 #       key = "value"
 #     }
@@ -61,6 +71,11 @@
 #     include_activity           = false
 #     include_changed_attributes = true
 #     include_relations          = true
+#   }
+#   protected = false
+#   secure_proxy = {
+#     integration_id = "123e4567-e89b-12d3-a456-426614174000"
+#     use_case_slug  = "...my_use_case_slug..."
 #   }
 #   status = "active"
 #   url    = "...my_url..."
