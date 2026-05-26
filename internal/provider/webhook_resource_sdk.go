@@ -415,11 +415,10 @@ func (r *WebhookResourceModel) ToSharedWebhookConfigInput(ctx context.Context) (
 	} else {
 		httpMethod1 = nil
 	}
-	jsonataExpression := new(string)
-	if !r.JsonataExpression.IsUnknown() && !r.JsonataExpression.IsNull() {
-		*jsonataExpression = r.JsonataExpression.ValueString()
-	} else {
-		jsonataExpression = nil
+	var jsonataExpression *string
+	if !r.JsonataExpression.IsUnknown() && !r.JsonataExpression.IsNull() && r.JsonataExpression.ValueString() != "" {
+		val := r.JsonataExpression.ValueString()
+		jsonataExpression = &val
 	}
 	var multipartConfig *shared.MultipartConfig
 	if r.MultipartConfig != nil {
