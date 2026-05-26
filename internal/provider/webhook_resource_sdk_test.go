@@ -2,8 +2,11 @@ package provider
 
 import (
 	"context"
+	"encoding/json"
+	"strings"
 	"testing"
 
+	"github.com/epilot-dev/terraform-provider-epilot-webhook/internal/sdk/models/shared"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
@@ -58,5 +61,46 @@ func TestToSharedWebhookConfigInput_EmptyJsonataExpression(t *testing.T) {
 				t.Errorf("expected JsonataExpression to be %q, got %q", tt.jsonataExpr.ValueString(), *result.JsonataExpression)
 			}
 		})
+	}
+}
+
+func TestRefreshThenUpdate_EmptyJsonataNotSentInJSON(t *testing.T) {
+	// Simulate what happens when API returns empty string for jsonataExpression
+	// then we update the webhook - the empty string should NOT appear in the JSON payload
+
+	// Step 1: Simulate API response with empty jsonataExpression
+	emptyStr := ""
+	apiResponse := &shared.WebhookConfig{
+		Name:              "test-webhook",
+		EventName:         "EntityCreated",
+		JsonataExpression: &emptyStr, // API returns empty string
+	}
+
+	// Step 2: Refresh model from API response
+	model := &WebhookResourceModel{}
+	diags := model.RefreshFromSharedWebhookConfig(context.Background(), apiResponse)
+	if diags.HasError() {
+		t.Fatalf("refresh failed: %v", diags)
+	}
+
+	// Step 3: Convert back to API request (as would happen during update)
+	result, diags := model.ToSharedWebhookConfigInput(context.Background())
+	if diags.HasError() {
+		t.Fatalf("conversion failed: %v", diags)
+	}
+
+	// Step 4: Verify jsonataExpression is nil (won't be sent due to omitempty)
+	if result.JsonataExpression != nil {
+		t.Errorf("expected JsonataExpression to be nil after refresh from empty string, got %q", *result.JsonataExpression)
+	}
+
+	// Step 5: Verify JSON serialization doesn't include jsonataExpression
+	jsonBytes, err := json.Marshal(result)
+	if err != nil {
+		t.Fatalf("JSON marshal failed: %v", err)
+	}
+
+	if strings.Contains(string(jsonBytes), "jsonataExpression") {
+		t.Errorf("JSON should not contain jsonataExpression field, got: %s", string(jsonBytes))
 	}
 }
